@@ -100,7 +100,10 @@ class Plugin(PluginBase):
                 self.xmppdog.stream.send(Message(to_jid=target, body=msg))
         elif   len(command) == 3:
             if (command[1] == "status"):
-                print "admin status"
+                # 此处设置状态工作不正常。
+                #p = Presence(command[2])
+                #return [p]
+                pass
         return True
 
     def cmd_help(self):

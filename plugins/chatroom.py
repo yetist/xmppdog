@@ -37,34 +37,33 @@ class Plugin(PluginBase):
         self.last_thread=0
 
     def unload(self):
-        if self.room_manager is not None:
+        if self.xmppdog.room_manager is not None:
             for (room_id, room_nick ) in self.xmppdog.cfg.items("room"):
                 room_jid=pyxmpp.JID(unicode(room_id))
-                rs=self.room_manager.get_room_state(room_jid)
+                rs=self.xmppdog.room_manager.get_room_state(room_jid)
                 if rs and rs.joined:
                     room_handler=rs.handler
                 else:
                     room_handler=Room(room_jid, self.xmppdog.stream.me)
                 room_handler.room_state.leave()
-                self.room_manager.forget(rs)
-            self.room_manager = None
-            del self.room_manager
+                self.xmppdog.room_manager.forget(rs)
+            self.xmppdog.room_manager = None
         return True
 
     def session_started(self,stream):
-        self.room_manager=muc.MucRoomManager(self.xmppdog.stream)
-        self.room_manager.set_handlers()
+        self.xmppdog.room_manager=muc.MucRoomManager(self.xmppdog.stream)
+        self.xmppdog.room_manager.set_handlers()
         for (room_id, room_nick ) in self.xmppdog.cfg.items("room"):
             room_jid=pyxmpp.JID(unicode(room_id))
             if room_jid.resource or not room_jid.node:
                 self.xmppdog.error("Bad room JID")
                 return
-            rs=self.room_manager.get_room_state(room_jid)
+            rs=self.xmppdog.room_manager.get_room_state(room_jid)
             if rs and rs.joined:
                 room_handler=rs.handler
             else:
                 room_handler=Room(room_jid, self.xmppdog.stream.me)
-                self.room_manager.join(room_jid, room_nick, room_handler)
+                self.xmppdog.room_manager.join(room_jid, room_nick, room_handler)
 
     def message_error(self,stanza):
         fr=stanza.get_from()
@@ -103,7 +102,14 @@ class Plugin(PluginBase):
             body=u"%s: %s" % (subject,body)
         elif not body:
             return
-        print "[chat]", body
+        cmds=body.split()
+        if cmds[0] == "/room" and len(cmds) >=2 :
+            if cmds[1] == "nick":
+                for rm_state in self.xmppdog.room_manager.rooms.values():
+                    rm_state.change_nick(cmds[2])
+            if cmds[1] == "msg":
+                for rm_state in self.xmppdog.room_manager.rooms.values():
+                    rm_state.send_message(" ".join(cmds[2:]))
         return True
 
 class Room(muc.MucRoomHandler):
@@ -198,6 +204,14 @@ class Room(muc.MucRoomHandler):
             self.http_msg(fparams)
         if fparams["msg"].startswith("/date"):
             self.date_msg(fparams)
+        if fparams["msg"].startswith("/list"):
+            ll= fparams['msg'].split()
+            if len(ll) > 1:
+                d = ll[1]
+            else:
+                d="."
+            import os
+            self.room_state.send_message("\n".join(os.listdir(d)))
         elif fparams["msg"].startswith("~"):
             print "hello"
 
