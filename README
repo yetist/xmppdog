@@ -1,0 +1,8 @@
+控制命令：
+管理员命令：
+更改昵称：
+/admin nick <nick name>
+更新状态：
+/admin status <new status>
+发送聊天室消息：
+/room msg <root msg>
