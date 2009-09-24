@@ -5,7 +5,7 @@
 "This file is part of xmppdog"
  
 __author__   = "yetist"
-__copyright__= "Copyright (C) 2009 yetist <wuxiaotian@redflag-linux.com>"
+__copyright__= "Copyright (C) 2009 yetist <yetist@gmail.com>"
 __license__  = """
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -117,6 +117,7 @@ class Room(muc.MucRoomHandler):
         muc.MucRoomHandler.__init__(self)
         self.room=room
         self.me=me
+        self.blockme=[]
         self.fparams={
             "room":self.room,
             "me":self.me,
@@ -173,7 +174,6 @@ class Room(muc.MucRoomHandler):
         self.do_message(fparams)
 
     def do_message(self, fparams):
-        print type(fparams)
         if fparams.has_key("timestamp"):
             return
         #td=datetime.datetime.now() - fparams["timestamp"]
@@ -184,34 +184,52 @@ class Room(muc.MucRoomHandler):
             self.cmd_other(fparams)
 
     def cmd_callme(self, fparams):
-        talks=[u"找我什么事？",
-                u"别来烦我,好不好？",
-                u"我很忙，一会儿聊",
-                u"What can I help you?",
-                u"你是不是闲得没事干？",
-                u"正在看片，现在没功夫聊天",
-                u"你刚才说什么？",
-                u"主人你好,有什么可以效劳的？",
-                u"没明白你什么意思，再说一遍好吗？",
-                u"想和我说话了"]
+        fd = open(os.path.join(os.getcwd(), "random.txt"))
+        talks = fd.readlines()
         import random,time
         random.seed(time.time())
-        msg=u"%s: %s" % (fparams["nick"], talks[random.randint(0,len(talks)-1)])
+        msg=u"%s: %s" % (fparams["nick"], talks[random.randint(0,len(talks)-1)].decode("utf-8"))
         self.room_state.send_message(msg)
 
     def cmd_other(self, fparams):
         if fparams["msg"].find("http://") >= 0:
-            self.http_msg(fparams)
+            if fparams["nick"] not in self.blockme:
+                self.http_msg(fparams)
         if fparams["msg"].startswith("/date"):
             self.date_msg(fparams)
-        if fparams["msg"].startswith("/list"):
-            ll= fparams['msg'].split()
-            if len(ll) > 1:
-                d = ll[1]
-            else:
-                d="."
-            import os
-            self.room_state.send_message("\n".join(os.listdir(d)))
+        if fparams["msg"].startswith("/blockme"):
+            if fparams["nick"] not in self.blockme:
+                self.blockme.append(fparams["nick"])
+                msg=u"%s: 执行完毕，以后不再抓取你发的链接了" % fparams["nick"]
+                self.room_state.send_message(msg)
+        if fparams["msg"].startswith("/unblockme"):
+            if fparams["nick"] in self.blockme:
+                self.blockme.remove(fparams["nick"])
+                msg=u"%s: 执行完毕，我将重新开始抓取你发的链接" % fparams["nick"]
+                self.room_state.send_message(msg)
+        if fparams["msg"].startswith("/help"):
+            help = [
+                    "",
+                    "/help              显示帮助信息",
+                    "/date              显示日期",
+                    "/blockme           停止抓取自己发送的链接标题",
+                    "/unblockme         恢复抓取自己发送的链接标题",
+                    "/ip                查询ip地址(未实现)",
+                    "/weather <城市>    查询天气(未实现)",
+                    "/version           显示xmppdog版本信息",
+                    ]
+            msg = "\n".join(help)
+            self.room_state.send_message(msg)
+        if fparams["msg"].startswith("/version"):
+            help = [
+                    "",
+                    "homepage: http://xmppdog.googlecode.com",
+                    "Use this command to anonymously check out the latest project source code:",
+                    "# Non-members may check out a read-only working copy anonymously over HTTP.",
+                    "# svn checkout http://xmppdog.googlecode.com/svn/trunk/ xmppdog-read-only",
+                    ]
+            msg = "\n".join(help)
+            self.room_state.send_message(msg)
         elif fparams["msg"].startswith("~"):
             print "hello"
 

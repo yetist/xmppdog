@@ -5,7 +5,7 @@
 "This file is part of xmppdog"
  
 __author__   = "yetist"
-__copyright__= "Copyright (C) 2009 yetist <wuxiaotian@redflag-linux.com>"
+__copyright__= "Copyright (C) 2009 yetist <yetist@gmail.com>"
 __license__  = """
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
