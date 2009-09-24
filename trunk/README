@@ -6,3 +6,7 @@
 /admin status <new status>
 发送聊天室消息：
 /room msg <root msg>
+
+聊天室消息响应：
+a. http:// 解析
+b. /date 查询日期 (依赖liblunar-2.2.0)
