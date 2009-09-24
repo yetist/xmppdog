@@ -1,0 +1,12 @@
+[xmppdog]
+admin=yetist@jabber.org
+account=xmppdog@jabber.org
+password=
+
+[room]
+linuxcn@conference.jabber.org=xmppdog
+
+[plugins]
+bot.admin=yes
+bot.chat=yes
+bot.room=yes
