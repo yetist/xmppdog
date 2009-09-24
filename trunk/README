@@ -1,4 +1,9 @@
-管理命令：
+
+内置命令：
+============
+
+超级管理员命令(需要以好友方式从管理员帐号发出):
+
 /sudo help
 /sudo down
 /sudo reload config
@@ -7,15 +12,31 @@
 /sudo reload plugin plugin_name
 /sudo load plugin plugin_name
 
-控制命令：
-管理员命令：
+
+扩展命令
+===========
+扩展命令由xmppdog自带模块提供，目前模块有admin, chat, chatroom.
+
+一. admin模块：
+
 更改昵称：
 /admin nick <nick name>
+
 更新状态：
 /admin status <new status>
+
+二. chatroom模块
+
 发送聊天室消息：
 /room msg <root msg>
 
-聊天室消息响应：
-a. http:// 解析
-b. /date 查询日期 (依赖liblunar-2.2.0)
+修改聊天室昵称：
+/room nick <new nick name>
+
+chatroom 模块提供了对聊天室对话内容的响应。
+a. http解析: 
+    当某人在聊天室发出的消息中包含http网址的时候，会返回此网址的title.
+b. date 查询日期 (依赖liblunar-2.2.0)
+    当某人在聊天室发送/date时，返回当前的公农历信息。
+c. 聊天
+    当某人在聊天室提到bot的名字时，随机发送无聊消息。
