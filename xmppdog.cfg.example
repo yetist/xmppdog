@@ -1,0 +1,18 @@
+[base]
+show_debug = 1
+show_info = 1
+admin = yetist@gmail.com
+
+[login]
+host = jabber.org
+user = xmppdog
+pass = 
+resource = xmppbot
+auth_methods = sasl:DIGEST-MD5 digest
+
+[plugins]
+chat = 1
+admin = 0
+
+[room]
+linuxcn@conference.jabber.org = xmppdog

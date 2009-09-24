@@ -1,3 +1,12 @@
+管理命令：
+/sudo help
+/sudo down
+/sudo reload config
+/sudo list plugins
+/sudo unload plugin plugin_name
+/sudo reload plugin plugin_name
+/sudo load plugin plugin_name
+
 控制命令：
 管理员命令：
 更改昵称：
