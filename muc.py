@@ -95,8 +95,14 @@ class Room(muc.MucRoomHandler):
     def cmd_other(self, fparams):
         if fparams["msg"].find("http://") >= 0:
             self.http_msg(fparams)
+        if fparams["msg"].startswith("/date"):
+            self.date_msg(fparams)
         elif fparams["msg"].startswith("~"):
             print "hello"
+
+    def date_msg(self, fparams):
+        import plugins
+        self.room_state.send_message(plugins.date.do_date())
 
     def http_msg(self, fparams):
         import urllib2,re
