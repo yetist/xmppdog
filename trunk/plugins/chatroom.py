@@ -120,6 +120,7 @@ class Room(muc.MucRoomHandler):
         self.me=me
         self.xmppdog = app
         self.blockme=[]
+        self.deletechars="""` ~!@#$%^&*()={[}]:;"'<,>.?/|\\"""
         self.fparams={
             "room":self.room,
             "me":self.me,
@@ -212,13 +213,13 @@ class Room(muc.MucRoomHandler):
         if fparams["msg"].startswith(">gentoo"):
             args = fparams['msg'].split()
             if len(args) == 2:
-                fd = os.popen("eix %s" % args[1].replace(";", " ").replace("`", " ").replace("$(", " "));
+                fd = os.popen("eix %s" % args[1].translate(None, self.deletechars));
                 msg = fd.read()
                 self.send_priv_msg(fparams["nick"], msg)
         if fparams["msg"].startswith(">arch"):
             args = fparams['msg'].split()
             if len(args) == 2:
-                fd = os.popen("pacman -Ss %s" % args[1].replace(";", " ").replace("`", " ").replace("$(", " "));
+                fd = os.popen("pacman -Ss %s" % args[1].translate(None, self.deletechars));
                 msg = fd.read()
                 self.send_priv_msg(fparams["nick"], msg)
         if fparams["msg"].startswith(">unblockme"):
