@@ -29,6 +29,7 @@ import pyxmpp
 from pyxmpp.jabber import delay
 from xmppdog.plugin import PluginBase
 from pyxmpp.jabber import muc,delay
+from pyxmpp.message import Message
 
 class Plugin(PluginBase):
     def __init__(self, app, name):
@@ -62,7 +63,7 @@ class Plugin(PluginBase):
             if rs and rs.joined:
                 room_handler=rs.handler
             else:
-                room_handler=Room(room_jid, self.xmppdog.stream.me)
+                room_handler=Room(room_jid, self.xmppdog.stream.me, self.xmppdog)
                 self.xmppdog.room_manager.join(room_jid, room_nick, room_handler)
 
     def message_error(self,stanza):
@@ -103,7 +104,7 @@ class Plugin(PluginBase):
         elif not body:
             return
         cmds=body.split()
-        if cmds[0] == "/room" and len(cmds) >=2 :
+        if cmds[0] == ">room" and len(cmds) >=2 :
             if cmds[1] == "nick":
                 for rm_state in self.xmppdog.room_manager.rooms.values():
                     rm_state.change_nick(cmds[2])
@@ -113,10 +114,11 @@ class Plugin(PluginBase):
         return True
 
 class Room(muc.MucRoomHandler):
-    def __init__(self, room, me):
+    def __init__(self, room, me, app):
         muc.MucRoomHandler.__init__(self)
         self.room=room
         self.me=me
+        self.xmppdog = app
         self.blockme=[]
         self.fparams={
             "room":self.room,
@@ -191,36 +193,55 @@ class Room(muc.MucRoomHandler):
         msg=u"%s: %s" % (fparams["nick"], talks[random.randint(0,len(talks)-1)].decode("utf-8"))
         self.room_state.send_message(msg)
 
+    def send_priv_msg(self, nick, msg):
+        user = self.room_state.get_user(nick, True)
+        m=Message(to_jid=user.room_jid, stanza_type="chat", body=msg)
+        self.xmppdog.stream.send(m)
+
     def cmd_other(self, fparams):
         if fparams["msg"].find("http://") >= 0:
             if fparams["nick"] not in self.blockme:
                 self.http_msg(fparams)
-        if fparams["msg"].startswith("/date"):
+        if fparams["msg"].startswith(">date"):
             self.date_msg(fparams)
-        if fparams["msg"].startswith("/blockme"):
+        if fparams["msg"].startswith(">blockme"):
             if fparams["nick"] not in self.blockme:
                 self.blockme.append(fparams["nick"])
                 msg=u"%s: 执行完毕，以后不再抓取你发的链接了" % fparams["nick"]
                 self.room_state.send_message(msg)
-        if fparams["msg"].startswith("/unblockme"):
+        if fparams["msg"].startswith(">gentoo"):
+            args = fparams['msg'].split()
+            if len(args) == 2:
+                fd = os.popen("eix %s" % args[1].replace(";", " "));
+                msg = fd.read()
+                self.send_priv_msg(fparams["nick"], msg)
+        if fparams["msg"].startswith(">arch"):
+            args = fparams['msg'].split()
+            if len(args) == 2:
+                fd = os.popen("pacman -Ss %s" % args[1].replace(";", " "));
+                msg = fd.read()
+                self.send_priv_msg(fparams["nick"], msg)
+        if fparams["msg"].startswith(">unblockme"):
             if fparams["nick"] in self.blockme:
                 self.blockme.remove(fparams["nick"])
                 msg=u"%s: 执行完毕，我将重新开始抓取你发的链接" % fparams["nick"]
                 self.room_state.send_message(msg)
-        if fparams["msg"].startswith("/help"):
+        if fparams["msg"].startswith(">help"):
             help = [
                     "",
-                    "/help              显示帮助信息",
-                    "/date              显示日期",
-                    "/blockme           停止抓取自己发送的链接标题",
-                    "/unblockme         恢复抓取自己发送的链接标题",
-                    "/ip                查询ip地址(未实现)",
-                    "/weather <城市>    查询天气(未实现)",
-                    "/version           显示xmppdog版本信息",
+                    ">help              显示帮助信息",
+                    ">date              显示日期",
+                    ">blockme           停止抓取自己发送的链接标题",
+                    ">unblockme         恢复抓取自己发送的链接标题",
+                    ">ip                查询ip地址(未实现)",
+                    ">weather <城市>    查询天气(未实现)",
+                    ">version           显示xmppdog版本信息",
+                    ">gentoo <pkg;pkg>  查询gentoo软件包",
+                    ">arch   <pkg;pkg>  查询arch软件包",
                     ]
             msg = "\n".join(help)
             self.room_state.send_message(msg)
-        if fparams["msg"].startswith("/version"):
+        if fparams["msg"].startswith(">version"):
             help = [
                     "",
                     "homepage: http://xmppdog.googlecode.com",

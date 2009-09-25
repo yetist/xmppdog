@@ -328,7 +328,7 @@ class Application(JabberClient):
             body=stanza.get_body()
             if process and body:
                 command = body.split()
-                if (command[0] == "/sudo"):
+                if (command[0] == ">sudo"):
                     self.cmd_sudo(stanza, command)
                # elif (command[0] == "/help"):
                #     msg = self.cmd_help()
@@ -411,7 +411,7 @@ class Application(JabberClient):
         Return help message.
         """
         lst=[]
-        cmd="/sudo"
+        cmd=">sudo"
         sub_cmd=("help", "down", 
         "reload config", 
         "list plugins", 

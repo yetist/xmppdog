@@ -84,7 +84,7 @@ class Plugin(PluginBase):
         if body:
             if (stanza.get_from().bare().as_utf8() == self.xmppdog.admin):
                 command = body.split()
-                if (command[0] == "/admin"):
+                if (command[0] == ">admin"):
                     return self.cmd_admin(stanza, command)
         print "msg end admin"
         return True
