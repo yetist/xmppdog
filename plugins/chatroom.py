@@ -179,6 +179,9 @@ class Room(muc.MucRoomHandler):
     def do_message(self, fparams):
         if fparams.has_key("timestamp"):
             return
+        #block msg from xmppdog.
+        if fparams["nick"]=="xmppdog":
+            return
         #td=datetime.datetime.now() - fparams["timestamp"]
         #if td.seconds > 10:
         if fparams["format"] == "muc.to_me":
