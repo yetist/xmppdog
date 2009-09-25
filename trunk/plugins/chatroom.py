@@ -111,7 +111,7 @@ class Plugin(PluginBase):
         sub_cmd=(
         "help            - this help message", 
         "nick <nick name> - set status", 
-        "msg <nick name> -  send message to chatroom",
+        "msg <message> -  send message to chatroom",
         "block <nick name> - block somebody", 
         "unblock <nick name> - unblock somebody", 
         )
