@@ -100,7 +100,7 @@ class Plugin(PluginBase):
         if (stanza.get_from().bare().as_utf8() == self.xmppdog.admin):
             command = body.split()
             if (command[0] == ">room"):
-                return self.cmd_admin(stanza, command)
+                return self.cmd_room(stanza, command)
 
     def cmd_help (self):
         """
@@ -119,7 +119,11 @@ class Plugin(PluginBase):
             lst.append(" ".join([cmd, i]))
         return unicode("\n".join(lst), 'iso-8859-2')
 
-    def cmd_admin(self, stanza, command):
+    def cmd_room(self, stanza, command):
+        if command[1] == "msg" and len(command) > 1 :
+            for rm_state in self.xmppdog.room_manager.rooms.values():
+                rm_state.send_message(" ".join(command[2:]))
+
         target = pyxmpp.JID(stanza.get_from())
         if   len(command) == 1:
             msg = self.cmd_help()
@@ -132,9 +136,6 @@ class Plugin(PluginBase):
             if (command[1] == "nick"):
                 for rm_state in self.xmppdog.room_manager.rooms.values():
                     rm_state.change_nick(command[2])
-            elif (command[1] == "msg"):
-                for rm_state in self.xmppdog.room_manager.rooms.values():
-                    rm_state.send_message(" ".join(command[2:]))
             elif (command[1] == "block"):
                 for (room_id, room_nick ) in self.xmppdog.cfg.items("room"):
                     room_jid=pyxmpp.JID(unicode(room_id))
