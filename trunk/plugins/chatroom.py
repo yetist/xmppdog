@@ -97,20 +97,68 @@ class Plugin(PluginBase):
         thread=stanza.get_thread()
         subject=stanza.get_subject()
         body=stanza.get_body()
-        if body is None:
-            body=u""
-        if subject:
-            body=u"%s: %s" % (subject,body)
-        elif not body:
-            return
-        cmds=body.split()
-        if cmds[0] == ">room" and len(cmds) >=2 :
-            if cmds[1] == "nick":
+        if (stanza.get_from().bare().as_utf8() == self.xmppdog.admin):
+            command = body.split()
+            if (command[0] == ">room"):
+                return self.cmd_admin(stanza, command)
+
+    def cmd_help (self):
+        """
+        Return help message.
+        """
+        lst=[]
+        cmd=">room"
+        sub_cmd=(
+        "help            - this help message", 
+        "nick <nick name> - set status", 
+        "msg <nick name> -  send message to chatroom",
+        "block <nick name> - block somebody", 
+        "unblock <nick name> - unblock somebody", 
+        )
+        for i in sub_cmd:
+            lst.append(" ".join([cmd, i]))
+        return unicode("\n".join(lst), 'iso-8859-2')
+
+    def cmd_admin(self, stanza, command):
+        target = pyxmpp.JID(stanza.get_from())
+        if   len(command) == 1:
+            msg = self.cmd_help()
+            self.xmppdog.stream.send(Message(to_jid=target, body=msg))
+        elif len(command) == 2:
+            if (command[1] == "help"):
+                msg = self.cmd_help()
+                self.xmppdog.stream.send(Message(to_jid=target, body=msg))
+        elif   len(command) == 3:
+            if (command[1] == "nick"):
                 for rm_state in self.xmppdog.room_manager.rooms.values():
-                    rm_state.change_nick(cmds[2])
-            if cmds[1] == "msg":
+                    rm_state.change_nick(command[2])
+            elif (command[1] == "msg"):
                 for rm_state in self.xmppdog.room_manager.rooms.values():
-                    rm_state.send_message(" ".join(cmds[2:]))
+                    rm_state.send_message(" ".join(command[2:]))
+            elif (command[1] == "block"):
+                for (room_id, room_nick ) in self.xmppdog.cfg.items("room"):
+                    room_jid=pyxmpp.JID(unicode(room_id))
+                    if room_jid.resource or not room_jid.node:
+                        self.xmppdog.error("Bad room JID")
+                        return True
+                    rs=self.xmppdog.room_manager.get_room_state(room_jid)
+                    if rs and rs.joined:
+                        room_handler=rs.handler
+                        room_handler.blockme.append(command[2])
+                        msg=u"/me 忽略了 %s 的消息" % command[2]
+                        room_handler.room_state.send_message(msg)
+            elif (command[1] == "unblock"):
+                for (room_id, room_nick ) in self.xmppdog.cfg.items("room"):
+                    room_jid=pyxmpp.JID(unicode(room_id))
+                    if room_jid.resource or not room_jid.node:
+                        self.xmppdog.error("Bad room JID")
+                        return True
+                    rs=self.xmppdog.room_manager.get_room_state(room_jid)
+                    if rs and rs.joined:
+                        room_handler=rs.handler
+                        room_handler.blockme.remove(command[2])
+                        msg=u"/me 开始关注 %s 的消息" % command[2]
+                        room_handler.room_state.send_message(msg)
         return True
 
 class Room(muc.MucRoomHandler):
@@ -190,6 +238,8 @@ class Room(muc.MucRoomHandler):
             self.cmd_other(fparams)
 
     def cmd_callme(self, fparams):
+        if fparams["nick"] in self.blockme:
+            return
         fd = open(os.path.join(os.getcwd(), "random.txt"))
         talks = fd.readlines()
         import random,time

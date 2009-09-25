@@ -111,7 +111,7 @@ class Plugin(PluginBase):
         Return help message.
         """
         lst=[]
-        cmd="/admin"
+        cmd=">admin"
         sub_cmd=(
         "help            - this help message", 
         "status [status] - set status", 

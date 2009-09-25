@@ -15,4 +15,6 @@ chat = 1
 admin = 0
 
 [room]
+#格式: 聊天室地址 = 昵称
 linuxcn@conference.jabber.org = xmppdog
+linuxcn@conference.jaim.at = xmppdog
