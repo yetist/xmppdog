@@ -194,7 +194,7 @@ class Room(muc.MucRoomHandler):
         talks = fd.readlines()
         import random,time
         random.seed(time.time())
-        msg=u"%s: %s" % (fparams["nick"], talks[random.randint(0,len(talks)-1)].decode("utf-8"))
+        msg=u"%s: %s" % (fparams["nick"], talks[random.randint(0,len(talks)-1)][:-1].decode("utf-8"))
         self.room_state.send_message(msg)
 
     def send_priv_msg(self, nick, msg):
