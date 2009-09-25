@@ -213,13 +213,13 @@ class Room(muc.MucRoomHandler):
         if fparams["msg"].startswith(">gentoo"):
             args = fparams['msg'].split()
             if len(args) == 2:
-                fd = os.popen("eix %s" % args[1].translate(None, self.deletechars));
+                fd = os.popen("eix %s" % str(args[1]).translate(None, self.deletechars));
                 msg = fd.read()
                 self.send_priv_msg(fparams["nick"], msg)
         if fparams["msg"].startswith(">arch"):
             args = fparams['msg'].split()
             if len(args) == 2:
-                fd = os.popen("pacman -Ss %s" % args[1].translate(None, self.deletechars));
+                fd = os.popen("pacman -Ss %s" % str(args[1]).translate(None, self.deletechars));
                 msg = fd.read()
                 self.send_priv_msg(fparams["nick"], msg)
         if fparams["msg"].startswith(">unblockme"):
