@@ -228,12 +228,13 @@ class Room(muc.MucRoomHandler):
     def do_message(self, fparams):
         if fparams.has_key("timestamp"):
             return
-        #block msg from xmppdog.
-        if fparams["nick"]=="xmppdog":
-            return
         #td=datetime.datetime.now() - fparams["timestamp"]
         #if td.seconds > 10:
         if fparams["format"] == "muc.to_me":
+            #block msg from xmppdog.
+            user = self.room_state.get_user(fparams['nick'], True)
+            if user.real_jid.resource.find("bot") >= 0:
+                return
             self.cmd_callme(fparams)
         elif fparams["format"] == "muc.other":
             self.cmd_other(fparams)
