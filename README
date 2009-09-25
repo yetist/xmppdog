@@ -4,13 +4,13 @@
 
 超级管理员命令(需要以好友方式从管理员帐号发出):
 
-/sudo help
-/sudo down
-/sudo reload config
-/sudo list plugins
-/sudo unload plugin plugin_name
-/sudo reload plugin plugin_name
-/sudo load plugin plugin_name
+>sudo help
+>sudo down
+>sudo reload config
+>sudo list plugins
+>sudo unload plugin plugin_name
+>sudo reload plugin plugin_name
+>sudo load plugin plugin_name
 
 
 扩展命令
@@ -20,7 +20,7 @@
 一. admin模块：
 
 更改昵称：
-/admin nick <nick name>
+>admin nick <nick name>
 
 更新状态：
 /admin status <new status>
@@ -28,10 +28,10 @@
 二. chatroom模块
 
 发送聊天室消息：
-/room msg <root msg>
+>room msg <root msg>
 
 修改聊天室昵称：
-/room nick <new nick name>
+>room nick <new nick name>
 
 chatroom 模块提供了对聊天室对话内容的响应。
 a. http解析: 
