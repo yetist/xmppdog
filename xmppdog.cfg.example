@@ -9,6 +9,7 @@ user = xmppdog
 pass = 
 resource = xmppbot
 auth_methods = sasl:DIGEST-MD5 digest
+disconnect_timeout=10
 
 [plugins]
 chat = 1
