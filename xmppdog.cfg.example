@@ -9,11 +9,13 @@ user = xmppdog
 pass = 
 resource = xmppbot
 auth_methods = sasl:DIGEST-MD5 digest
-disconnect_timeout=10
+disconnect_timeout=2
 
 [plugins]
+#是否启用某些插件
 chat = 1
-admin = 0
+admin = 1
+chatroom = 1
 
 [room]
 #格式: 聊天室地址 = 昵称
