@@ -298,6 +298,7 @@ class Room(muc.MucRoomHandler):
             msg = "\n".join(help)
             self.room_state.send_message(msg)
         if fparams["msg"].startswith(">version"):
+            print dir(self.xmppdog)
             help = [
                     "",
                     "homepage: http://xmppdog.googlecode.com",

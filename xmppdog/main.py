@@ -20,7 +20,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-__version__ = "$Rev$ $Date$"
+__version__ = "$Rev: 23 $ $Date: 2009-09-26 14:30:57 +0800 (六, 2009-09-26) $"
 
 import ConfigParser
 import sys, os
