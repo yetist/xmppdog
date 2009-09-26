@@ -301,7 +301,8 @@ class Room(muc.MucRoomHandler):
             help = [
                     "",
                     "homepage: http://xmppdog.googlecode.com",
-                    "$Revision$ $Date$",
+                    "$Revision$",
+                    "$Date$",
                     ]
             msg = "\n".join(help)
             self.room_state.send_message(msg)
