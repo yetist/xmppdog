@@ -298,13 +298,10 @@ class Room(muc.MucRoomHandler):
             msg = "\n".join(help)
             self.room_state.send_message(msg)
         if fparams["msg"].startswith(">version"):
-            print dir(self.xmppdog)
             help = [
                     "",
                     "homepage: http://xmppdog.googlecode.com",
-                    "Use this command to anonymously check out the latest project source code:",
-                    "# Non-members may check out a read-only working copy anonymously over HTTP.",
-                    "# svn checkout http://xmppdog.googlecode.com/svn/trunk/ xmppdog-read-only",
+                    "$Revision$ $Date$",
                     ]
             msg = "\n".join(help)
             self.room_state.send_message(msg)
