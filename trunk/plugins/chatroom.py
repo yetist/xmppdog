@@ -289,8 +289,8 @@ class Room(muc.MucRoomHandler):
             if len(args) == 2:
                 try:
                     Q=MQQWry()
-                    msg=u"%s: %s" % ( args[1], " ".join(Q[str(args[1])][2:]) )
-                except e:
+                    msg=u"%s-> %s" % ( args[1], " ".join(Q[str(args[1])][2:]).decode("utf8") )
+                except:
                     self.room_state.send_message(u"查询IP失败。")
                     return
                 self.room_state.send_message(msg)
@@ -301,7 +301,7 @@ class Room(muc.MucRoomHandler):
                     ">date              显示日期",
                     ">blockme           停止抓取自己发送的链接标题",
                     ">unblockme         恢复抓取自己发送的链接标题",
-                    ">ip                查询ip地址(未实现)",
+                    ">ip                查询ip地址",
                     ">weather <城市>    查询天气(未实现)",
                     ">version           显示xmppdog版本信息",
                     ">gentoo <pkg;pkg>  查询gentoo软件包",
