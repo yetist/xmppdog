@@ -31,6 +31,8 @@ from xmppdog.plugin import PluginBase
 from pyxmpp.jabber import muc,delay
 from pyxmpp.message import Message
 
+from QQWry import MQQWry
+
 class Plugin(PluginBase):
     def __init__(self, app, name):
         PluginBase.__init__(self,app,name)
@@ -281,6 +283,16 @@ class Room(muc.MucRoomHandler):
             if fparams["nick"] in self.blockme:
                 self.blockme.remove(fparams["nick"])
                 msg=u"%s: 执行完毕，我将重新开始抓取你发的链接" % fparams["nick"]
+                self.room_state.send_message(msg)
+        if fparams["msg"].startswith(">ip"):
+            args = fparams['msg'].split()
+            if len(args) == 2:
+                try:
+                    Q=MQQWry()
+                    msg=u"%s: %s" % ( args[1], " ".join(Q[str(args[1])][2:]) )
+                except e:
+                    self.room_state.send_message(u"查询IP失败。")
+                    return
                 self.room_state.send_message(msg)
         if fparams["msg"].startswith(">help"):
             help = [
