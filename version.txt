@@ -1,6 +1,6 @@
 Here is the latest report from the front lines.
 $LastChangedDate$
-$Rev$
+__hello__ = "$Rev$"
 $Date$
 $Revision$
 $Author$
