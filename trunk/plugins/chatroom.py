@@ -285,6 +285,15 @@ class Room(muc.MucRoomHandler):
                 except:
                     msg = "no result"
                 self.send_priv_msg(fparams["nick"], msg)
+        if fparams["msg"].startswith(">ubuntu"):
+            args = fparams['msg'].split()
+            if len(args) == 2:
+                try:
+                    fd = os.popen("apt-cache search %s" % str(args[1]).translate(None, self.deletechars));
+                    msg = fd.read()
+                except:
+                    msg = "no result"
+                self.send_priv_msg(fparams["nick"], msg)
         if fparams["msg"].startswith(">unblockme"):
             if fparams["nick"] in self.blockme:
                 self.blockme.remove(fparams["nick"])
@@ -312,6 +321,7 @@ class Room(muc.MucRoomHandler):
                     ">version           显示xmppdog版本信息",
                     ">gentoo <pkg;pkg>  查询gentoo软件包",
                     ">arch   <pkg;pkg>  查询arch软件包",
+                    ">ubuntu <pkg;pkg>  查询ubuntu软件包",
                     ]
             msg = "\n".join(help)
             self.room_state.send_message(msg)
