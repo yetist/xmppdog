@@ -267,32 +267,10 @@ class Room(muc.MucRoomHandler):
                 self.blockme.append(fparams["nick"])
                 msg=u"%s: 执行完毕，以后不再抓取你发的链接了" % fparams["nick"]
                 self.room_state.send_message(msg)
-        if fparams["msg"].startswith(">gentoo"):
+        if fparams["msg"].startswith(">pkg"):
             args = fparams['msg'].split()
             if len(args) == 2:
-                try:
-                    fd = os.popen("eix %s" % str(args[1]).translate(None, self.deletechars));
-                    msg = fd.read()
-                except:
-                    msg = "no result"
-                self.send_priv_msg(fparams["nick"], msg)
-        if fparams["msg"].startswith(">arch"):
-            args = fparams['msg'].split()
-            if len(args) == 2:
-                try:
-                    fd = os.popen("pacman -Ss %s" % str(args[1]).translate(None, self.deletechars));
-                    msg = fd.read()
-                except:
-                    msg = "no result"
-                self.send_priv_msg(fparams["nick"], msg)
-        if fparams["msg"].startswith(">ubuntu"):
-            args = fparams['msg'].split()
-            if len(args) == 2:
-                try:
-                    fd = os.popen("apt-cache search %s" % str(args[1]).translate(None, self.deletechars));
-                    msg = fd.read()
-                except:
-                    msg = "no result"
+                msg = self.pkg_info(args[1])
                 self.send_priv_msg(fparams["nick"], msg)
         if fparams["msg"].startswith(">unblockme"):
             if fparams["nick"] in self.blockme:
@@ -319,9 +297,7 @@ class Room(muc.MucRoomHandler):
                     ">ip                查询ip地址",
                     ">weather <城市>    查询天气(未实现)",
                     ">version           显示xmppdog版本信息",
-                    ">gentoo <pkg;pkg>  查询gentoo软件包",
-                    ">arch   <pkg;pkg>  查询arch软件包",
-                    ">ubuntu <pkg;pkg>  查询ubuntu软件包",
+                    ">pkg    <pkg>      查询linux软件包",
                     ]
             msg = "\n".join(help)
             self.room_state.send_message(msg)
@@ -351,6 +327,21 @@ class Room(muc.MucRoomHandler):
 
         self.room_state.send_message(l.strftime(format))
 
+    def pkg_info(self, pkg):
+        if os.path.exists("/usr/bin/apt-cache"):
+            cmd = "apt-cache search %s"
+        elif os.path.exists("/usr/bin/eix"):
+            cmd = "eix -c %s"
+        elif os.path.exists("/usr/bin/pacman"):
+            cmd = "pacman -Ss %s"
+        else:
+            return "No support command found!"
+        try:
+            fd = os.popen(cmd % str(pkg).translate(None, self.deletechars));
+            return fd.read()
+        except:
+            return "no result"
+        
     def http_msg(self, fparams):
         import urllib2,re
         p0 = re.compile(r'.*(http://[\w\-./%?=&]+[\w\-./%?=&]*).*', re.IGNORECASE|re.DOTALL)
