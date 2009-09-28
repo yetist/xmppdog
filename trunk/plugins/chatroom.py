@@ -323,9 +323,8 @@ class Room(muc.MucRoomHandler):
         l=liblunar.Date()
         l.set_solar_date(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour)
         tt = "%d:%d:%d" % (t.tm_hour, t.tm_min, t.tm_sec);
-        format =                                                                                                                                                 "\n公历：%(YEAR)年%(MONTH)月%(DAY)日\n农历：%(NIAN)年%(YUE)月%(RI)日\n干支：%(Y60)年%(M60)月%(D60)日\n生肖：%(shengxiao)\n节日：%(jieri)\n时间：" +tt
-
-        self.room_state.send_message(l.strftime(format))
+        format = "\n公历：%(YEAR)年%(MONTH)月%(DAY)日\n农历：%(NIAN)年%(YUE)月%(RI)日\n干支：%(Y60)年%(M60)月%(D60)日\n生肖：%(shengxiao)\n"
+        self.room_state.send_message(l.strftime(format) + "时间：" + tt + l.strftime(" (%(SHI)时)\n今天是") + l.get_jieri(" "))
 
     def pkg_info(self, pkg):
         if os.path.exists("/usr/bin/apt-cache"):
