@@ -360,7 +360,7 @@ class Room(muc.MucRoomHandler):
             title=p1.match(f)
             if title:
                 title = title.group(1)
-                title = ''.join(title.split("\n"))
+                title = ''.join(title.split("\n\a"))
                 p2=re.compile('charset=(.*?)[\"]?/?>', re.IGNORECASE)
                 code = p2.match(f)
                 if code:
