@@ -230,13 +230,16 @@ class Room(muc.MucRoomHandler):
     def do_message(self, fparams):
         if fparams.has_key("timestamp"):
             return
+        #block msg from xmppdog.
+        if fparams["nick"]=="xmppdog":
+            return
         #td=datetime.datetime.now() - fparams["timestamp"]
         #if td.seconds > 10:
         if fparams["format"] == "muc.to_me":
             #block msg from xmppdog.
-            user = self.room_state.get_user(fparams['nick'], True)
-            if user.real_jid.resource.find("bot") >= 0:
-                return
+            #user = self.room_state.get_user(fparams['nick'], True)
+            #if user.real_jid.resource.find("bot") >= 0:
+            #    return
             self.cmd_callme(fparams)
         elif fparams["format"] == "muc.other":
             self.cmd_other(fparams)
@@ -359,8 +362,7 @@ class Room(muc.MucRoomHandler):
             p1=re.compile(r'.*?<title>(.*?)</title>.*?', re.IGNORECASE|re.DOTALL)
             title=p1.match(f)
             if title:
-                title = title.group(1)
-                title = ''.join(title.split("\n\a"))
+                title = title.group(1).translate(None, "\n\r")
                 p2=re.compile('charset=(.*?)[\"]?/?>', re.IGNORECASE)
                 code = p2.match(f)
                 if code:
