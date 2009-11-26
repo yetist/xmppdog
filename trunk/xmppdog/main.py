@@ -33,8 +33,13 @@ from pyxmpp.all import JID,Iq,Presence,Message,StreamError
 from pyxmpp.jabber.client import JabberClient
 from pyxmpp.jabber import delay
 
+from pyxmpp.interface import implements
+from pyxmpp.interfaces import *
+
 class Application(JabberClient):
     """ Application class """
+
+    implements(IPresenceHandlersProvider)
     def __init__(self, base_dir, config_file):
         """ Initialize the application. """
         self.configFile = config_file
@@ -402,6 +407,57 @@ class Application(JabberClient):
             except StandardError:
                 self.print_exception()
                 self.info("Plugin call failed")
+
+    def get_presence_handlers(self):
+        """Return list of (presence_type, presence_handler) tuples.
+
+        The handlers returned will be called when matching presence stanza is
+        received in a client session."""
+        return [
+            (None, self.presence),
+            ('unavailable', self.presence),
+            ('subscribe', self.presence_control),
+            ('subscribed', self.presence_control),
+            ('unsubscribe', self.presence_control),
+            ('unsubscribed', self.presence_control)]
+
+    def presence(self, stanza):
+        """Handle 'available' (without 'type') and 'unavailable' <presence/ >."""
+        msg = u'%s has become ' % (stanza.get_from())
+        t = stanza.get_type()
+        if t == 'unavailable':
+            msg += u'离线'
+        else:
+            msg += u'上线'
+
+        show = stanza.get_show()
+
+        if show:
+            msg += u'(%s)' % (show,)
+
+        status = stanza.get_status()
+        if status:
+            msg += u': '+status
+        print msg
+
+    def presence_control(self, stanza):
+        """Handle subscription control <presence /> stanzas -- acknowledge
+        them."""
+        msg = unicode(stanza.get_from())
+        t = stanza.get_type()
+        if t == 'subscribe':
+            msg += u' has requested presence subscription.'
+        elif t == 'subscribed':
+            msg += u' has accepted our presence subscription request.'
+        elif t =='unsubscribe':
+            msg += u' has canceled his subscription of our.'
+        elif t == 'unsubscribed':
+            msg += u' has canceled our subscription of his presence.'
+
+        print msg
+
+        #Create "accept" response for the "subscribe"/"subscribed"/"unsubscribe"/"unsubscribed" presence stanza.
+        return stanza.make_accept_response()
 
     def session_started(self):
         """
