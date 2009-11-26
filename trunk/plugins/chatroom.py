@@ -94,15 +94,18 @@ class Plugin(PluginBase):
         conv.error(stanza)
         return 1
 
+    def message_normal(self, stanza):
+        self.message_chat(stanza)
+
     def message_chat(self,stanza):
         fr=stanza.get_from()
         thread=stanza.get_thread()
         subject=stanza.get_subject()
         body=stanza.get_body()
-        if (stanza.get_from().bare().as_utf8() == self.xmppdog.admin):
-            command = body.split()
-            if (command[0] == ">room"):
-                return self.cmd_room(stanza, command)
+        #if (stanza.get_from().bare().as_utf8() in self.xmppdog.admin):
+        command = body.split()
+        if (command[0] == ">room"):
+            return self.cmd_room(stanza, command)
 
     def cmd_help (self):
         """
@@ -122,9 +125,13 @@ class Plugin(PluginBase):
         return unicode("\n".join(lst), 'iso-8859-2')
 
     def cmd_room(self, stanza, command):
+        fr=stanza.get_from()
         if command[1] == "msg" and len(command) > 1 :
             for rm_state in self.xmppdog.room_manager.rooms.values():
-                rm_state.send_message(" ".join(command[2:]))
+                rm_state.send_message((fr.bare().as_unicode().split("@")[0] + "->" + " ".join(command[2:])))
+
+        if (fr.bare().as_unicode() not in self.xmppdog.admin):
+            return
 
         target = pyxmpp.JID(stanza.get_from())
         if   len(command) == 1:

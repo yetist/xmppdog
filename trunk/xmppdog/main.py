@@ -69,7 +69,7 @@ class Application(JabberClient):
         self.cfg.read(self.configFile)
         self.show_debug = (self.cfg.get('base','show_debug') == "1")
         self.show_info = (self.cfg.get('base','show_info') == "1")
-        self.admin = self.cfg.get('base', 'admin')
+        self.admin = self.cfg.get('base', 'admin').split(",")
         self.jid = JID(self.cfg.get('login', 'user'),
                        self.cfg.get('login', 'host'),
                        self.cfg.get('login', 'resource')
@@ -365,7 +365,7 @@ class Application(JabberClient):
         """
         Handle incomming chat message.
         """ 
-        if (stanza.get_from().bare().as_utf8() == self.admin):
+        if (stanza.get_from().bare().as_utf8() in self.admin):
             process = True
             message_delay = delay.get_delay(stanza)
             if (message_delay 

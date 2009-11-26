@@ -1,7 +1,7 @@
 [base]
 show_debug = 1
 show_info = 1
-admin = yetist@gmail.com
+admin = yetist@gmail.com,yetist@jabber.org
 
 [login]
 host = jabber.org
