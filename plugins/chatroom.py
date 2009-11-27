@@ -107,6 +107,8 @@ class Plugin(PluginBase):
         command = body.split()
         if (command[0] == ">room"):
             return self.cmd_room(stanza, command)
+        elif (command[0] == ">fetch"):
+            return self.cmd_fetch(stanza, command)
         #TODO:处理聊天室私聊信息:
         if fr.bare().as_unicode().find("conference") > 1:
             self.xmppdog.stream.send(Message(to_jid=target, body=stanza.get_body()))
@@ -175,13 +177,42 @@ class Plugin(PluginBase):
                         room_handler.room_state.send_message(msg)
         return True
 
+    def cmd_fetch(self, stanza, command):
+        fr=stanza.get_from().bare().as_unicode()
+        target = pyxmpp.JID(stanza.get_from())
+        if len(command) == 3:
+            if (command[1] == "start"):
+                room_jid=pyxmpp.JID(unicode(command[2]))
+                if room_jid.resource or not room_jid.node:
+                    self.xmppdog.error("Bad room JID")
+                    return True
+                rs=self.xmppdog.room_manager.get_room_state(room_jid)
+                if rs and rs.joined:
+                    room_handler=rs.handler
+                    room_handler.fetchlist.append(fr)
+                    msg=u"%s 订阅了本聊天室的消息" % fr
+                    room_handler.room_state.send_message(msg)
+            elif (command[1] == "stop"):
+                room_jid=pyxmpp.JID(unicode(command[2]))
+                if room_jid.resource or not room_jid.node:
+                    self.xmppdog.error("Bad room JID")
+                    return True
+                rs=self.xmppdog.room_manager.get_room_state(room_jid)
+                if rs and rs.joined:
+                    room_handler=rs.handler
+                    room_handler.fetchlist.remove(fr)
+                    msg=u"%s 取消了订阅本聊天室的消息" % fr
+                    room_handler.room_state.send_message(msg)
+        return True
+
 class Room(muc.MucRoomHandler):
     def __init__(self, room, me, app):
         muc.MucRoomHandler.__init__(self)
         self.room=room
         self.me=me
         self.xmppdog = app
-        self.blockme=[]
+        self.blockme=[]     #block 列表
+        self.fetchlist=[]     #订阅本聊天室的jid列表
         self.deletechars="""` ~!@#$%^&*()={[}]:;"'<,>.?/|\\"""
         self.fparams={
             "room":self.room,
@@ -220,6 +251,12 @@ class Room(muc.MucRoomHandler):
         d=delay.get_delay(stanza)
         if d:
             fparams["timestamp"]=d.get_datetime_local()
+        if len(self.fetchlist) > 0:
+            for i in self.fetchlist:
+                target = pyxmpp.JID(i)
+                msg = fparams["nick"] + ": " + body
+                self.xmppdog.stream.send(Message(to_jid=target, body=msg))
+
         if body.startswith(u"/me "):
             fparams["msg"]=body[4:]
             return
