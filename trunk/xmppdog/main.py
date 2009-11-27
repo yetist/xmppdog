@@ -315,6 +315,9 @@ class Application(JabberClient):
 
     def cmd_sudo(self, stanza, command):
         target = JID(stanza.get_from())
+        if (stanza.get_from().bare().as_utf8() not in self.admin):
+            self.stream.send(Message(to_jid=target, body="you are not the admin!"))
+            return
         if   len(command) == 1:
             msg = self.cmd_help()
             self.stream.send(Message(to_jid=target, body=msg))
@@ -365,24 +368,23 @@ class Application(JabberClient):
         """
         Handle incomming chat message.
         """ 
-        if (stanza.get_from().bare().as_utf8() in self.admin):
-            process = True
-            message_delay = delay.get_delay(stanza)
-            if (message_delay 
-                and
-                message_delay.reason == "Offline Storage"
-               ):
-                self.info("Ingnoring offline message from " + \
-                    message_delay.fr.as_string() + ": " + stanza.get_body()
-                   )
-                process = False
-            body=stanza.get_body()
-            if process and body:
-                command = body.split()
-                if (command[0] == ">sudo"):
-                    self.cmd_sudo(stanza, command)
-                else:
-                    self.plugins_message_chat(stanza)
+        process = True
+        message_delay = delay.get_delay(stanza)
+        if (message_delay 
+            and
+            message_delay.reason == "Offline Storage"
+           ):
+            self.info("Ingnoring offline message from " + \
+                message_delay.fr.as_string() + ": " + stanza.get_body()
+               )
+            process = False
+        body=stanza.get_body()
+        if process and body:
+            command = body.split()
+            if (command[0] == ">sudo"):
+                self.cmd_sudo(stanza, command)
+            else:
+                self.plugins_message_chat(stanza)
         return 1
 
     def plugins_message_chat(self, stanza):
