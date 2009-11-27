@@ -130,6 +130,7 @@ class Plugin(PluginBase):
             for rm_state in self.xmppdog.room_manager.rooms.values():
                 rm_state.send_message((fr.bare().as_unicode().split("@")[0] + "->" + " ".join(command[2:])))
 
+        #TODO:处理聊天室私聊信息,目前被屏蔽。
         if (fr.bare().as_unicode() not in self.xmppdog.admin):
             return
 

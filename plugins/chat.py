@@ -68,6 +68,9 @@ class Plugin(PluginBase):
         conv.error(stanza)
         return 1
 
+    def message_normal(self, stanza):
+        self.message_chat(stanza)
+
     def message_chat(self,stanza):
         fr=stanza.get_from()
         thread=stanza.get_thread()
