@@ -102,10 +102,14 @@ class Plugin(PluginBase):
         thread=stanza.get_thread()
         subject=stanza.get_subject()
         body=stanza.get_body()
+        target = pyxmpp.JID(stanza.get_from())
         #if (stanza.get_from().bare().as_utf8() in self.xmppdog.admin):
         command = body.split()
         if (command[0] == ">room"):
             return self.cmd_room(stanza, command)
+        #TODO:处理聊天室私聊信息:
+        if fr.bare().as_unicode().find("conference") > 1:
+            self.xmppdog.stream.send(Message(to_jid=target, body=stanza.get_body()))
 
     def cmd_help (self):
         """
@@ -130,7 +134,6 @@ class Plugin(PluginBase):
             for rm_state in self.xmppdog.room_manager.rooms.values():
                 rm_state.send_message((fr.bare().as_unicode().split("@")[0] + "->" + " ".join(command[2:])))
 
-        #TODO:处理聊天室私聊信息,目前被屏蔽。
         if (fr.bare().as_unicode() not in self.xmppdog.admin):
             return
 
