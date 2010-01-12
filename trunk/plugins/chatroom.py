@@ -308,7 +308,7 @@ class Room(muc.MucRoomHandler):
         self.xmppdog.stream.send(m)
 
     def cmd_other(self, fparams):
-        if fparams["msg"].find("http://") >= 0:
+        if fparams["msg"].find("http://") >= 0 or fparams["msg"].find("https://") >= 0:
             if fparams["nick"] not in self.blockme:
                 self.http_msg(fparams)
         if fparams["msg"].startswith(">date"):
@@ -394,7 +394,7 @@ class Room(muc.MucRoomHandler):
         
     def http_msg(self, fparams):
         import urllib2,re
-        p0 = re.compile(r'.*(http://[\w\-./%?=&]+[\w\-./%?=&]*).*', re.IGNORECASE|re.DOTALL)
+        p0 = re.compile(r'.*(https?://[\w\-./%?=&]+[\w\-./%?=&]*).*', re.IGNORECASE|re.DOTALL)
         m1 = p0.match(fparams['msg'])
         if m1:
             try:
