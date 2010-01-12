@@ -401,7 +401,7 @@ class Room(muc.MucRoomHandler):
                 print m1.group(1)
                 headers = { 'User-Agent' : "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.0.1) Gecko/2008070208 Firefox/3.0.1"}
                 req = urllib2.Request(m1.group(1), None, headers)
-                d = urllib2.urlopen(req)
+                d = urllib2.urlopen(req, timeout=3)
             except:
                 msg = u"%s 无法打开此链接" % fparams["nick"]
                 self.room_state.send_message(msg)
