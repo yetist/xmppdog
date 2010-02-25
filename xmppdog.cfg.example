@@ -1,6 +1,6 @@
 [base]
-show_debug = 1
-show_info = 1
+#DEBUG=10, INFO=20, WARN=30
+logger_level = 10
 admin = yetist@gmail.com,yetist@jabber.org
 
 [login]
@@ -8,7 +8,6 @@ host = jabber.org
 user = xmppdog
 pass = 
 resource = xmppbot
-auth_methods = sasl:DIGEST-MD5 digest
 disconnect_timeout=2
 
 [plugins]
