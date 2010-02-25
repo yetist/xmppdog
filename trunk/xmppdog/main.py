@@ -261,7 +261,6 @@ class Application(JabberClient):
 
     def idle(self):
         stream=self.get_stream()
-        self.logger.info("call idle()")
         while not self.exit_time():
             self.state_changed.acquire()
             stream=self.get_stream()
@@ -291,7 +290,6 @@ class Application(JabberClient):
             except pyxmpp.StreamError,e:
                 self.disconnecting = 1
                 self.disconnect()
-                self.connect()
             except (KeyboardInterrupt,SystemExit),e:
                 self.exit_request(unicode(str(e)))
             except:
