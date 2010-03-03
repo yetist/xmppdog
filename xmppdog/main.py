@@ -271,7 +271,8 @@ class Application(JabberClient):
             if not stream:
                 continue
             try:
-                act = self.stream.loop_iter(1)
+                #act = self.stream.loop_iter(1)
+                act = self.stream.loop_iter(timeout=1)
                 if not act:
                     self.stream.idle()
             except (pyxmpp.FatalStreamError,pyxmpp.StreamEncryptionRequired),e:
