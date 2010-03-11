@@ -102,6 +102,7 @@ class Application(JabberClient):
             self.logger.debug("connecting...")
             self.connect()
             self.logger.debug("processing...")
+            self.stream.process_stream_error = self.my_stream_error
             
             try:
                 self.loop(1)
@@ -259,42 +260,58 @@ class Application(JabberClient):
             return 1
         return 0
 
-    def idle(self):
+    def my_stream_error(self, err):
+        print "~~mystreamerr start"
+        print "Stream error: condition: ..." 
+        self.force_disconnect()
+        time.sleep(5)
+        self.connect()
+        self.reload_plugin("chatroom")
+        print "~~ mystreamerr end"
+        self.state_changed.acquire()
         stream=self.get_stream()
-        while not self.exit_time():
-            self.state_changed.acquire()
+        if not stream:
+            self.state_changed.wait(1)
             stream=self.get_stream()
-            if not stream:
-                self.state_changed.wait(1)
-                stream=self.get_stream()
-            self.state_changed.release()
-            if not stream:
-                continue
+        self.state_changed.release()
+        print "~~ mystreamerr end2"
+
+    def idle(self):
+
+        print "hello"
+        stream=self.get_stream()
+#        while not self.exit_time():
+        self.state_changed.acquire()
+        stream=self.get_stream()
+        if not stream:
+            self.state_changed.wait(1)
+            stream=self.get_stream()
+        self.state_changed.release()
+        try:
+            #act = self.stream.loop_iter(1)
+            act = self.stream.loop_iter(timeout=1)
+            if not act:
+                self.stream.idle()
+        except (pyxmpp.FatalStreamError,pyxmpp.StreamEncryptionRequired),e:
+            self.state_changed.acquire()
             try:
-                #act = self.stream.loop_iter(1)
-                act = self.stream.loop_iter(timeout=1)
-                if not act:
-                    self.stream.idle()
-            except (pyxmpp.FatalStreamError,pyxmpp.StreamEncryptionRequired),e:
-                self.state_changed.acquire()
+                if isinstance(e, pyxmpp.exceptions.TLSError):
+                    self.logger.error(u"You may try disabling encryption: /set tls_enable false")
                 try:
-                    if isinstance(e, pyxmpp.exceptions.TLSError):
-                        self.logger.error(u"You may try disabling encryption: /set tls_enable false")
-                    try:
-                        self.get_stream.close()
-                    except:
-                        pass
-                    stream=None
-                    self.state_changed.notify()
-                finally:
-                    self.state_changed.release()
-            except pyxmpp.StreamError,e:
-                self.disconnecting = 1
-                self.disconnect()
-            except (KeyboardInterrupt,SystemExit),e:
-                self.exit_request(unicode(str(e)))
-            except:
-                raise
+                    self.get_stream.close()
+                except:
+                    pass
+                stream=None
+                self.state_changed.notify()
+            finally:
+                self.state_changed.release()
+        except pyxmpp.StreamError,e:
+            self.disconnecting = 1
+            self.disconnect()
+        except (KeyboardInterrupt,SystemExit),e:
+            self.exit_request(unicode(str(e)))
+        except:
+            raise
 
     def force_disconnect(self):
         self.lock.acquire()
