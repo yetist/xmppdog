@@ -278,7 +278,6 @@ class Application(JabberClient):
 
     def idle(self):
 
-        print "hello"
         stream=self.get_stream()
 #        while not self.exit_time():
         self.state_changed.acquire()
@@ -415,12 +414,14 @@ class Application(JabberClient):
         """
         Call plugin handler for incomming chat message.
         """ 
+        self.logger.debug(u'Chat message from %r ' % (stanza.get_from()))
         for plugin in self.plugins.values():
             try:
                 plugin.message_chat(stanza)
             except StandardError:
                 self.print_exception()
                 self.logger.info("Plugin call failed")
+        return True
 
     def plugins_message_normal(self, stanza):
         """
@@ -433,6 +434,7 @@ class Application(JabberClient):
             except StandardError:
                 self.print_exception()
                 self.logger.info("Plugin call failed")
+        return True
 
     def presence(self, stanza):
         """Handle 'available' (without 'type') and 'unavailable' <presence/ >."""
