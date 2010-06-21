@@ -95,7 +95,22 @@ class Plugin(PluginBase):
         return 1
 
     def message_normal(self, stanza):
-        self.message_chat(stanza)
+        #self.message_chat(stanza)
+        fr=stanza.get_from()
+        subject=stanza.get_subject()
+        body=stanza.get_body()
+        # 给Qomodev聊天室发送Bug报告
+        if body:
+            if fr.bare().as_utf8() == "bugs.linux-ren.org@jabber.org":
+                room_jid=pyxmpp.JID(unicode("qomodev@conference.jabber.org"))
+                if room_jid.resource or not room_jid.node:
+                    self.xmppdog.error("Bad room JID")
+                    return True
+                rs=self.xmppdog.room_manager.get_room_state(room_jid)
+                if rs and rs.joined:
+                    room_handler=rs.handler
+                    room_handler.room_state.send_message(body)
+        return True
 
     def message_chat(self,stanza):
         fr=stanza.get_from()
@@ -109,9 +124,13 @@ class Plugin(PluginBase):
             return self.cmd_room(stanza, command)
         elif (command[0] == ">fetch"):
             return self.cmd_fetch(stanza, command)
+        if stanza.get_type()=="headline":
+            # 'headline' messages should never be replied to
+            return True
         #TODO:处理聊天室私聊信息:
         if fr.bare().as_unicode().find("conference") > 1:
-            self.xmppdog.stream.send(Message(to_jid=target, body=stanza.get_body()))
+            self.xmppdog.stream.send(Message(to_jid=target, body=body))
+            return True
 
     def cmd_help (self):
         """
