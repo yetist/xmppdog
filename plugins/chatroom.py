@@ -102,14 +102,15 @@ class Plugin(PluginBase):
         # 给Qomodev聊天室发送Bug报告
         if body:
             if fr.bare().as_utf8() == "bugs.linux-ren.org@jabber.org":
-                room_jid=pyxmpp.JID(unicode("qomodev@conference.jabber.org"))
-                if room_jid.resource or not room_jid.node:
-                    self.xmppdog.error("Bad room JID")
-                    return True
-                rs=self.xmppdog.room_manager.get_room_state(room_jid)
-                if rs and rs.joined:
-                    room_handler=rs.handler
-                    room_handler.room_state.send_message(body)
+                for cm in ("qomodev@conference.jabber.org", "qomodev@conference.jaim.at"):
+                    room_jid=pyxmpp.JID(unicode(cm))
+                    if room_jid.resource or not room_jid.node:
+                        self.xmppdog.error("Bad room JID")
+                        return True
+                    rs=self.xmppdog.room_manager.get_room_state(room_jid)
+                    if rs and rs.joined:
+                        room_handler=rs.handler
+                        room_handler.room_state.send_message(body)
         return True
 
     def message_chat(self,stanza):
