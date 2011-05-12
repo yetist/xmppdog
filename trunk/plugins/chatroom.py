@@ -343,6 +343,11 @@ class Room(muc.MucRoomHandler):
             if len(args) == 2:
                 msg = self.pkg_info(args[1])
                 self.send_priv_msg(fparams["nick"], msg)
+        if fparams["msg"].startswith("--usage"):
+            readme = os.path.join(self.xmppdog.base_dir, "README")
+            buf = open(readme).read()
+            msg = unicode("\n" + buf, 'utf8')
+            self.send_priv_msg(fparams["nick"], msg)
         if fparams["msg"].startswith("--unblockme"):
             if fparams["nick"] in self.blockme:
                 self.blockme.remove(fparams["nick"])
@@ -362,6 +367,7 @@ class Room(muc.MucRoomHandler):
             help = [
                     "",
                     "--help              显示帮助信息",
+                    "--usage             显示完整的帮助信息",
                     "--date              显示日期",
                     "--blockme           停止抓取自己发送的链接标题",
                     "--unblockme         恢复抓取自己发送的链接标题",
