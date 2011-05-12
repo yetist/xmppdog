@@ -566,7 +566,7 @@ class Application(JabberClient):
         for i in sub_cmd:
             lst.append(" ".join([cmd, i]))
         return unicode("\n" + "\n".join(lst), 'utf8')
-    
+
     def exit(self):
         """
         Disconnect and exit.
