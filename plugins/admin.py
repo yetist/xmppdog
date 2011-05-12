@@ -21,15 +21,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import string
-import curses
-import os
-
 import pyxmpp
-from pyxmpp.all import JID,Iq,Presence,Message,StreamError
+from pyxmpp.all import JID,Iq,Presence,Message
 from pyxmpp.jabber import delay
 from xmppdog.plugin import PluginBase
-from pyxmpp.interface import implements
+#from pyxmpp.interface import implements
 from pyxmpp.interfaces import *
 
 class Plugin(PluginBase):
@@ -57,41 +53,42 @@ class Plugin(PluginBase):
             timestamp=d.get_datetime_local()
         else:
             timestamp=None
-        print "here", body
+#        print "here", body
 
     def message_chat(self, stanza):
         """
         Handle incomming chat message.
         """ 
-        print "msg from admin"
+#        print "msg from admin"
         subject=stanza.get_subject()
         body=stanza.get_body()
         t=stanza.get_type()
-        print u'Message from %s received.' % (unicode(stanza.get_from(),)),
-        if subject:
-            print u'Subject: "%s".' % (subject,),
-        if body:
-            print u'Body: "%s".' % (body,),
-        if t:
-            print u'Type: "%s".' % (t,)
-        else:
-            print u'Type: "normal".' % (t,)
+#        print u'Message from %s received.' % (unicode(stanza.get_from(),)),
+#        if subject:
+#            print u'Subject: "%s".' % (subject,),
+#        if body:
+#            print u'Body: "%s".' % (body,),
+#        if t:
+#            print u'Type: "%s".' % (t,)
+#        else:
+#            print u'Type: "normal".' % (t,)
         if stanza.get_type()=="headline":
             # 'headline' messages should never be replied to
             return True
         if subject:
             subject=u"Re: "+subject
         if body:
-            if (stanza.get_from().bare().as_utf8() == self.xmppdog.admin):
+            if stanza.get_from().bare().as_utf8() in self.xmppdog.admin:
                 command = body.split()
-                if (command[0] == ">admin"):
+                if (command[0] == "--admin"):
                     return self.cmd_admin(stanza, command)
-        print "msg end admin"
+            else:
+                return self.xmppdog.stream.send(Message(to_jid=target, body=body))
         return True
 
     def cmd_admin(self, stanza, command):
         target = JID(stanza.get_from())
-        if   len(command) == 1:
+        if  len(command) == 1:
             msg = self.cmd_help()
             self.xmppdog.stream.send(Message(to_jid=target, body=msg))
         elif len(command) == 2:
@@ -111,13 +108,13 @@ class Plugin(PluginBase):
         Return help message.
         """
         lst=[]
-        cmd=">admin"
+        cmd="--admin"
         sub_cmd=(
         "help            - this help message", 
         "status [status] - set status", 
         )
         for i in sub_cmd:
             lst.append(" ".join([cmd, i]))
-        return unicode("\n".join(lst), 'iso-8859-2')
+        return unicode("\n" + "\n".join(lst), 'iso-8859-2')
 
 # vi: sts=4 et sw=4

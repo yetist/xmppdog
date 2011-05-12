@@ -121,9 +121,9 @@ class Plugin(PluginBase):
         target = pyxmpp.JID(stanza.get_from())
         #if (stanza.get_from().bare().as_utf8() in self.xmppdog.admin):
         command = body.split()
-        if (command[0] == ">room"):
+        if (command[0] == "--room"):
             return self.cmd_room(stanza, command)
-        elif (command[0] == ">fetch"):
+        elif (command[0] == "--fetch"):
             return self.cmd_fetch(stanza, command)
         if stanza.get_type()=="headline":
             # 'headline' messages should never be replied to
@@ -138,7 +138,7 @@ class Plugin(PluginBase):
         Return help message.
         """
         lst=[]
-        cmd=">room"
+        cmd="--room"
         sub_cmd=(
         "help            - this help message", 
         "nick <nick name> - set status", 
@@ -331,24 +331,24 @@ class Room(muc.MucRoomHandler):
         if fparams["msg"].find("http://") >= 0 or fparams["msg"].find("https://") >= 0:
             if fparams["nick"] not in self.blockme:
                 self.http_msg(fparams)
-        if fparams["msg"].startswith(">date"):
+        if fparams["msg"].startswith("--date"):
             self.date_msg(fparams)
-        if fparams["msg"].startswith(">blockme"):
+        if fparams["msg"].startswith("--blockme"):
             if fparams["nick"] not in self.blockme:
                 self.blockme.append(fparams["nick"])
                 msg=u"%s: 执行完毕，以后不再抓取你发的链接了" % fparams["nick"]
                 self.room_state.send_message(msg)
-        if fparams["msg"].startswith(">pkg"):
+        if fparams["msg"].startswith("--pkg"):
             args = fparams['msg'].split()
             if len(args) == 2:
                 msg = self.pkg_info(args[1])
                 self.send_priv_msg(fparams["nick"], msg)
-        if fparams["msg"].startswith(">unblockme"):
+        if fparams["msg"].startswith("--unblockme"):
             if fparams["nick"] in self.blockme:
                 self.blockme.remove(fparams["nick"])
                 msg=u"%s: 执行完毕，我将重新开始抓取你发的链接" % fparams["nick"]
                 self.room_state.send_message(msg)
-        if fparams["msg"].startswith(">ip"):
+        if fparams["msg"].startswith("--ip"):
             args = fparams['msg'].split()
             if len(args) == 2:
                 try:
@@ -358,21 +358,21 @@ class Room(muc.MucRoomHandler):
                     self.room_state.send_message(u"查询IP失败。")
                     return
                 self.room_state.send_message(msg)
-        if fparams["msg"].startswith(">help"):
+        if fparams["msg"].startswith("--help"):
             help = [
                     "",
-                    ">help              显示帮助信息",
-                    ">date              显示日期",
-                    ">blockme           停止抓取自己发送的链接标题",
-                    ">unblockme         恢复抓取自己发送的链接标题",
-                    ">ip                查询ip地址",
-                    ">weather <城市>    查询天气(未实现)",
-                    ">version           显示xmppdog版本信息",
-                    ">pkg    <pkg>      查询linux软件包",
+                    "--help              显示帮助信息",
+                    "--date              显示日期",
+                    "--blockme           停止抓取自己发送的链接标题",
+                    "--unblockme         恢复抓取自己发送的链接标题",
+                    "--ip                查询ip地址",
+                    "--weather <城市>    查询天气(未实现)",
+                    "--version           显示xmppdog版本信息",
+                    "--pkg    <pkg>      查询linux软件包",
                     ]
             msg = "\n".join(help)
             self.room_state.send_message(msg)
-        if fparams["msg"].startswith(">version"):
+        if fparams["msg"].startswith("--version"):
             help = [
                     "",
                     "homepage: http://xmppdog.googlecode.com",

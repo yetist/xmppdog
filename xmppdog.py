@@ -21,9 +21,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys
+import os, sys
 from xmppdog import main
 
-base_dir=sys.path[0]
+dirname = os.path.dirname(os.path.abspath(__file__))
 
-main.main(base_dir)
+while True:
+    main.main(dirname)

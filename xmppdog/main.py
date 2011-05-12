@@ -337,24 +337,24 @@ class Application(JabberClient):
         self.state_changed.release()
 
     def cmd_sudo(self, stanza, command):
+        # 管理员控制命令
         target = JID(stanza.get_from())
         if (stanza.get_from().bare().as_utf8() not in self.admin):
             self.stream.send(Message(to_jid=target, body="you are not the admin!"))
             return
-        if   len(command) == 1:
+        if len(command) == 1:
             msg = self.cmd_help()
             self.stream.send(Message(to_jid=target, body=msg))
         elif len(command) == 2:
-            if (command[1] == "down"):
+            if (command[1] == "restart"):
                 self.exit()
             elif (command[1] == "help"):
                 msg = self.cmd_help()
                 self.stream.send(Message(to_jid=target, body=msg))
         elif len(command) == 3:
-            if (command[1] == "reload" and command[2] == "config"):
+            if (command[1] == "config" and command[2] == "reload"):
                 self.read_cfg()
-                self.stream.send(Message(to_jid=target, 
-                    body=u'config reloaded'))
+                self.stream.send(Message(to_jid=target, body=u'config reloaded'))
                 for plugin in self.plugins.values():
                     try:
                         plugin.read_cfg()
@@ -404,7 +404,7 @@ class Application(JabberClient):
         body=stanza.get_body()
         if process and body:
             command = body.split()
-            if (command[0] == ">sudo"):
+            if (command[0] == "--sudo"):
                 self.cmd_sudo(stanza, command)
             else:
                 self.plugins_message_chat(stanza)
@@ -554,16 +554,18 @@ class Application(JabberClient):
         Return help message.
         """
         lst=[]
-        cmd=">sudo"
-        sub_cmd=("help", "down", 
-        "reload config", 
-        "list plugins", 
-        "unload plugin plugin_name",
-        "reload plugin plugin_name",
-        "load plugin plugin_name")
+        cmd="--sudo"
+        sub_cmd=(
+        "help                        显示帮助文件",
+        "restart                     重启机器人", 
+        "config reload               重新载入配置文件", 
+        "list plugins                列出当前可用的插件", 
+        "unload plugin <plugin_name>   卸载名为plugin_name的插件",
+        "reload plugin <plugin_name>   重载名为plugin_name的插件",
+        "load plugin <plugin_name>     载入名为plugin_name的插件")
         for i in sub_cmd:
             lst.append(" ".join([cmd, i]))
-        return unicode("\n".join(lst), 'iso-8859-2')
+        return unicode("\n" + "\n".join(lst), 'utf8')
     
     def exit(self):
         """
@@ -584,7 +586,6 @@ def main(base_dir):
     Run the application.
     """ 
     app = Application(base_dir, 'xmppdog.cfg')
-    
     app.run()
 
 # vi: sts=4 et sw=4
