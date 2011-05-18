@@ -111,9 +111,9 @@ def cmd_fetch(myself, params):
         msg = u"/me \"%s\"订阅了本聊天室的消息，目前共有 %d 个订阅者，他们是%s。" % (nick, num, " ".join(myself.fetchlist))
 
         myself.send2room(msg)
-        myself.send2one("已经订阅成功")
+        myself.send2one(params['nick'], "已经订阅成功")
     else:
-        myself.send2one("不能重复订阅聊天室消息")
+        myself.send2one(params['nick'], "不能重复订阅聊天室消息")
 
 def cmd_unfetch(myself, params):
     "取消订阅，执行此命令后，聊天室的消息将不再转发给自己"
@@ -128,9 +128,9 @@ def cmd_unfetch(myself, params):
             msg = u"/me \"%s\"取消了订阅本聊天室的消息，目前共有 %d 个订阅者，他们是%s。" % (nick, num, " ".join(myself.fetchlist))
 
         myself.send2room(msg)
-        myself.send2one("成功取消订阅")
+        myself.send2one(params['nick'], "成功取消订阅")
     else:
-        myself.send2one("你没有订阅过聊天室消息")
+        myself.send2one(params['nick'], "你没有订阅过聊天室消息")
 
 def cmd_unblockme(myself, params):
     "恢复抓取自己发送的链接标题"
