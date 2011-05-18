@@ -100,6 +100,38 @@ def cmd_usage(myself, params):
     msg = unicode("\n" + buf, 'utf8')
     myself.send2one(params["nick"], msg)
 
+def cmd_fetch(myself, params):
+    "订阅，执行此命令后，聊天室的消息将会转发给自己一份"
+
+    nick = params["nick"]
+    if nick not in myself.fetchlist:
+        myself.fetchlist.append(nick)
+
+        num = len(myself.fetchlist)
+        msg = "/me \"%s\"订阅了本聊天室的消息，目前共有 %d 个订阅者，他们是%s。" % (nick, num, " ".join(myself.fetchlist))
+
+        myself.send2room(msg)
+        myself.send2one("已经订阅成功")
+    else:
+        myself.send2one("不能重复订阅聊天室消息")
+
+def cmd_unfetch(myself, params):
+    "取消订阅，执行此命令后，聊天室的消息将不再转发给自己"
+
+    nick = params["nick"]
+    if nick in myself.fetchlist:
+        myself.fetchlist.remove(nick)
+        num = len(myself.fetchlist)
+        if num == 0:
+            msg = "/me \"%s\"取消了订阅本聊天室的消息，目前没有订阅者。" % nick
+        else:
+            msg = "/me \"%s\"取消了订阅本聊天室的消息，目前共有 %d 个订阅者，他们是%s。" % (nick, num, " ".join(myself.fetchlist))
+
+        myself.send2room(msg)
+        myself.send2one("成功取消订阅")
+    else:
+        myself.send2one("你没有订阅过聊天室消息")
+
 def cmd_unblockme(myself, params):
     "恢复抓取自己发送的链接标题"
 
