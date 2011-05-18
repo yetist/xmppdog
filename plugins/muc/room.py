@@ -84,11 +84,12 @@ class Room(muc.MucRoomHandler):
         d=delay.get_delay(stanza)
         if d:
             fparams["timestamp"]=d.get_datetime_local()
+
         if len(self.fetchlist) > 0:
             for i in self.fetchlist:
                 target = pyxmpp.JID(i)
                 msg = fparams["nick"] + ": " + body
-                self.xmppdog.stream.send(Message(to_jid=target, body=msg))
+                self.send2one(Message(to_jid=target, body=msg))
 
         if body.startswith(u"/me "):
             fparams["msg"]=body[4:]
