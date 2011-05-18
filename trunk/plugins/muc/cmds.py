@@ -126,7 +126,7 @@ def cmd_version(myself, params):
     line = [
             "",
             "homepage: http://xmppdog.googlecode.com",
-            "$Revision: 52 $",
+            "$Revision$",
             "$Date: 2011-05-12 23:01:10 +0800 (四, 2011-05-12) $",
             ]
     msg = "\n".join(line)
