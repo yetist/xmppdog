@@ -26,6 +26,7 @@ import os
 from pyxmpp.jabber import muc,delay
 from cmds import commands, acommands, commandchrs
 from pyxmpp.message import Message
+import pyxmpp
 
 class ADMIN_COMMAND(Exception):pass
 class MSG_COMMAND(Exception):pass
@@ -88,8 +89,10 @@ class Room(muc.MucRoomHandler):
         if len(self.fetchlist) > 0:
             for i in self.fetchlist:
                 target = pyxmpp.JID(i)
+                print i, target
                 msg = fparams["nick"] + ": " + body
-                self.send2one(Message(to_jid=target, body=msg))
+                #self.send2one(fparams['nick'], msg)
+                self.xmppdog.stream.send(Message(to_jid=target, body=msg))
 
         if body.startswith(u"/me "):
             fparams["msg"]=body[4:]
