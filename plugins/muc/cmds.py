@@ -58,7 +58,7 @@ def cmd_date(myself, params):
         l = LunarDate.Date()
         l.set_solar_date(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour)
         tt = "%d:%d:%d" % (t.tm_hour, t.tm_min, t.tm_sec);
-        format = "\n公历：%(YEAR)年%(MONTH)月%(DAY)日\n农历：%(NIAN)年%(YUE)月%(RI)日\n干支：%(Y60)年%(M60)月%(D60)日\n生肖：%(shengxiao)\n"
+        format = u"\n公历：%(YEAR)年%(MONTH)月%(DAY)日\n农历：%(NIAN)年%(YUE)月%(RI)日\n干支：%(Y60)年%(M60)月%(D60)日\n生肖：%(shengxiao)\n"
         myself.send2room(l.strftime(format) + "时间：" + tt + l.strftime(" (%(SHI)时)\n今天是") + l.get_jieri(" "))
     except:
         myself.send2room("此命令当前不可用\n")
@@ -108,7 +108,7 @@ def cmd_fetch(myself, params):
         myself.fetchlist.append(nick)
 
         num = len(myself.fetchlist)
-        msg = "/me \"%s\"订阅了本聊天室的消息，目前共有 %d 个订阅者，他们是%s。" % (nick, num, " ".join(myself.fetchlist))
+        msg = u"/me \"%s\"订阅了本聊天室的消息，目前共有 %d 个订阅者，他们是%s。" % (nick, num, " ".join(myself.fetchlist))
 
         myself.send2room(msg)
         myself.send2one("已经订阅成功")
@@ -123,9 +123,9 @@ def cmd_unfetch(myself, params):
         myself.fetchlist.remove(nick)
         num = len(myself.fetchlist)
         if num == 0:
-            msg = "/me \"%s\"取消了订阅本聊天室的消息，目前没有订阅者。" % nick
+            msg = u"/me \"%s\"取消了订阅本聊天室的消息，目前没有订阅者。" % nick
         else:
-            msg = "/me \"%s\"取消了订阅本聊天室的消息，目前共有 %d 个订阅者，他们是%s。" % (nick, num, " ".join(myself.fetchlist))
+            msg = u"/me \"%s\"取消了订阅本聊天室的消息，目前共有 %d 个订阅者，他们是%s。" % (nick, num, " ".join(myself.fetchlist))
 
         myself.send2room(msg)
         myself.send2one("成功取消订阅")
