@@ -69,7 +69,7 @@ class Room(muc.MucRoomHandler):
     def send2room(self, msg):
         self.room_state.send_message(msg)
 
-    def send2one(self, nick, msg):
+    def send2nick(self, nick, msg):
         user = self.room_state.get_user(nick, True)
         m=Message(to_jid=user.room_jid, stanza_type="chat", body=msg)
         self.xmppdog.stream.send(m)
@@ -91,7 +91,7 @@ class Room(muc.MucRoomHandler):
                 target = pyxmpp.JID(i)
                 print i, target
                 msg = fparams["nick"] + ": " + body
-                #self.send2one(fparams['nick'], msg)
+                #self.send2nick(fparams['nick'], msg)
                 self.xmppdog.stream.send(Message(to_jid=target, body=msg))
 
         if body.startswith(u"/me "):

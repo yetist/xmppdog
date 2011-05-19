@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import logging
+import pyxmpp
 
 class PluginBase:
     def __init__(self, app, name):
@@ -66,5 +67,32 @@ class PluginBase:
         Called when a session is closed (the stream has been disconnected).
         """
         pass
+
+    def is_admin(self, stanza):
+        jid = self.get_jid(stanza)
+        return jid in self.xmppdog.admin
+
+    def get_jid(self, stanza):
+        fr=stanza.get_from()
+        jid = fr.bare().as_unicode()
+        return jid
+
+    def send_to_jid(self, jid, msg):
+        target = pyxmpp.JID(jid)
+        #m = pyxmpp.message.Message(to_jid=target,  stanza_type="chat", body=msg)
+        m = pyxmpp.message.Message(to_jid=target, body=msg)
+        return self.xmppdog.stream.send(m)
+
+    def send_to_one(self, stanza, msg):
+        target = pyxmpp.JID(stanza.get_from())
+        m = pyxmpp.message.Message(to_jid=target, body=msg)
+        self.xmppdog.stream.send(m)
+
+    def is_room_msg(self, stanza):
+        jid = self.get_jid(stanza)
+        if jid.find("conference") > 1:
+            return True
+        else:
+            return False
 
 # vi: sts=4 et sw=4

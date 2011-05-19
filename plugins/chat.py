@@ -82,6 +82,8 @@ class Plugin(PluginBase):
             body=u"%s: %s" % (subject,body)
         elif not body:
             return
+        if self.is_room_msg(stanza):
+            return True
         print "[chat]", body
         return True
 
