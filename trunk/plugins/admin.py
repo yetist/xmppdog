@@ -78,23 +78,23 @@ class Plugin(PluginBase):
         if subject:
             subject=u"Re: "+subject
         if body:
-            if stanza.get_from().bare().as_utf8() in self.xmppdog.admin:
+            if self.is_admin(stanza):
                 command = body.split()
                 if (command[0] == "--admin"):
                     return self.cmd_admin(stanza, command)
             else:
-                return self.xmppdog.stream.send(Message(to_jid=target, body=body))
+                return self.send_to_jid(self.get_jid(stanza), body)
         return True
 
     def cmd_admin(self, stanza, command):
         target = JID(stanza.get_from())
         if  len(command) == 1:
             msg = self.cmd_help()
-            self.xmppdog.stream.send(Message(to_jid=target, body=msg))
+            self.send_to_jid(self.get_jid(stanza), msg)
         elif len(command) == 2:
             if (command[1] == "help"):
                 msg = self.cmd_help()
-                self.xmppdog.stream.send(Message(to_jid=target, body=msg))
+                self.send_to_jid(self.get_jid(stanza), msg)
         elif   len(command) == 3:
             if (command[1] == "status"):
                 # 此处设置状态工作不正常。
