@@ -183,14 +183,14 @@ class Plugin(PluginBase):
 def cmd_msg(myself, stanza, msg):
     "[room_jid] <message> -  向聊天室(room_jid)发送消息"
 
+    if " " in msg:
+        mid, m = msg.split(" ",1)
+    else:
+        m, mid = msg.strip(),None
+
     jid = stanza.get_from_jid()
     nick = jid.as_unicode().split("/")[-1]
-    msg = "%s -> %s" % (nick, msg)
-
-    if " " in msg:
-        mid, nick=msg.split(" ",1)
-    else:
-        nick, mid=msg.strip(),None
+    msg = "%s -> %s" % (nick, m)
 
     for rm_state in myself.xmppdog.room_manager.rooms.values():
         rm_jid = rm_state.get_room_jid().as_unicode()
