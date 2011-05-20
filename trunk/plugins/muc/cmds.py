@@ -158,11 +158,18 @@ def cmd_fuck(myself, params):
 
     if len(args) == 3:
         who = args[1]
-        num = args[2]
-        msg = u"%s: fuck %d 次 %s %s" % (nick, num, who, cnt)
+        try:
+            num = int(args[2])
+        except ValueError:
+            num = 1
+        i = 0
+        while i < num:
+            i = i+1
+            msg = u"%s: fuck %d 次! %s: \"%s\"" % (nick, i, who, cnt)
+            myself.send2room(msg)
     else:
-        msg = u"%s: fuck %s" % (nick, cnt)
-    myself.send2room(msg)
+        msg = u"%s: fuck! %s" % (nick, cnt)
+        myself.send2room(msg)
 
 def cmd_ip(myself, params):
     "<IP>           查询ip地址"
