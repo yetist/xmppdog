@@ -152,7 +152,16 @@ def cmd_fuck(myself, params):
     fd = open(fuck)
     talks = fd.readlines()
     random.seed(time.time())
-    msg=u"%s: %s" % (params["nick"], talks[random.randint(0,len(talks)-1)][:-1].decode("utf-8"))
+    nick = params["nick"]
+    cnt = talks[random.randint(0,len(talks)-1)][:-1].decode("utf-8")
+    args = params['msg'].split()
+
+    if len(args) == 3:
+        who = args[1]
+        num = args[2]
+        msg = u"%s: fuck %d 次 %s %s" % (nick, num, who, cnt)
+    else:
+        msg = u"%s: fuck %s" % (nick, cnt)
     myself.send2room(msg)
 
 def cmd_ip(myself, params):
