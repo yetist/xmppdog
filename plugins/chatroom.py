@@ -181,7 +181,7 @@ class Plugin(PluginBase):
 #########################################################
 
 def cmd_msg(myself, stanza, msg):
-    "[room_jid] <message> -  向聊天室(room_jid)发送消息"
+    "[room] <message> -  向聊天室发送消息"
 
     if " " in msg:
         mid, m = msg.split(" ",1)
@@ -200,7 +200,7 @@ def cmd_msg(myself, stanza, msg):
             rm_state.send_message(msg)
 
 def cmd_nick(myself, stanza, msg):
-    "[room_jid] <nickname> - 修改xmppdog在聊天室(room_jid)中的昵称"
+    "[room] <nick> - 修改xmppdog在聊天室中的昵称"
 
     if " " in msg:
         mid, nick=msg.split(" ",1)
@@ -215,7 +215,7 @@ def cmd_nick(myself, stanza, msg):
             rm_state.change_nick(nick)
 
 def cmd_block(myself, stanza, msg):
-    "[room_jid] <nick name> - 在聊天室中禁止对<nick>的消息响应"
+    "[room] <nick> - 在聊天室中禁止对<nick>的消息响应"
 
     if " " in msg:
         mid, nick=msg.split(" ",1)
@@ -240,7 +240,7 @@ def cmd_block(myself, stanza, msg):
                 myself.send_to_one(stanza, u"%s 已经被忽略了" % nick)
 
 def cmd_unblock(myself, stanza, msg):
-    "[room_jid] <nick name> - 在聊天室中恢复对<nick>的消息响应"
+    "[room] <nick> - 在聊天室中恢复对<nick>的消息响应"
 
     if " " in msg:
         mid, nick=msg.split(" ",1)
@@ -265,7 +265,7 @@ def cmd_unblock(myself, stanza, msg):
                 myself.send_to_one(stanza, u"%s 没有被忽略" % nick)
 
 def cmd_fetch(myself, stanza, msg):
-    "[room_jid] <nick name> - 设置<nick>订阅聊天室(room_jid)消息"
+    "[room] <jid> - 设置<jid>订阅聊天室消息"
 
     if " " in msg:
         mid, nick=msg.split(" ",1)
@@ -277,20 +277,22 @@ def cmd_fetch(myself, stanza, msg):
         if mid is None:
             if nick not in rm_state.handler.fetchlist:
                 rm_state.handler.fetchlist.append(nick)
-                msg=u"/me %s 订阅了本聊天室的消息" % nick
+                num = len(rm_state.handler.fetchlist)
+                msg = u"/me \"%s\"订阅了本聊天室的消息，目前共有 %d 个订阅者\n%s" % (nick, num, "\n".join(rm_state.handler.fetchlist))
                 rm_state.handler.room_state.send_message(msg)
             else:
                 myself.send_to_one(stanza, u"%s 已经订阅过聊天室消息" % nick)
         elif rm_jid.startswith(mid):
             if nick not in rm_state.handler.fetchlist:
                 rm_state.handler.fetchlist.append(nick)
-                msg=u"/me %s 订阅了本聊天室的消息" % nick
+                num = len(rm_state.handler.fetchlist)
+                msg = u"/me \"%s\"订阅了本聊天室的消息，目前共有 %d 个订阅者\n%s" % (nick, num, "\n".join(rm_state.handler.fetchlist))
                 rm_state.handler.room_state.send_message(msg)
             else:
                 myself.send_to_one(stanza, u"%s 已经订阅过聊天室消息" % nick)
 
 def cmd_unfetch(myself, stanza, msg):
-    "[room_jid] <nick name> - 取消<nick>订阅聊天室(room_jid)消息"
+    "[room] <jid> - 取消<jid>订阅聊天室消息"
 
     if " " in msg:
         mid, nick=msg.split(" ",1)
@@ -302,14 +304,22 @@ def cmd_unfetch(myself, stanza, msg):
         if mid is None:
             if nick in rm_state.handler.fetchlist:
                 rm_state.handler.fetchlist.remove(nick)
-                msg=u"/me %s 取消了订阅本聊天室的消息" % nick
+                num = len(rm_state.handler.fetchlist)
+                if num == 0:
+                    msg = u"/me \"%s\"取消了订阅本聊天室的消息，目前没有订阅者。" % nick
+                else:
+                    msg = u"/me \"%s\"取消了订阅本聊天室的消息，目前共有 %d 个订阅者\n%s" % (nick, num, "\n".join(rm_state.handler.fetchlist))
                 rm_state.handler.room_state.send_message(msg)
             else:
                 myself.send_to_one(stanza, u"%s 没有订阅过聊天室消息" % nick)
         elif rm_jid.startswith(mid):
             if nick in rm_state.handler.fetchlist:
                 rm_state.handler.fetchlist.remove(nick)
-                msg=u"/me %s 取消了订阅本聊天室的消息" % nick
+                num = len(rm_state.handler.fetchlist)
+                if num == 0:
+                    msg = u"/me \"%s\"取消了订阅本聊天室的消息，目前没有订阅者。" % nick
+                else:
+                    msg = u"/me \"%s\"取消了订阅本聊天室的消息，目前共有 %d 个订阅者\n%s" % (nick, num, "\n".join(rm_state.handler.fetchlist))
                 rm_state.handler.room_state.send_message(msg)
             else:
                 myself.send_to_one(stanza, u"%s 没有订阅过聊天室消息" % nick)

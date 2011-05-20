@@ -1,6 +1,6 @@
 [base]
 #DEBUG=10, INFO=20, WARN=30
-logger_level = 10
+logger_level = 30
 admin = yetist@gmail.com,yetist@jabber.org
 
 [login]
@@ -13,7 +13,6 @@ disconnect_timeout=2
 [plugins]
 #是否启用某些插件
 chat = 1
-admin = 1
 chatroom = 1
 
 [room]
