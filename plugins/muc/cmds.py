@@ -151,9 +151,7 @@ def cmd_fuck(myself, params):
     fuck = os.path.join(myself.xmppdog.base_dir, "fuck.txt")
     fd = open(fuck)
     talks = fd.readlines()
-    random.seed(time.time())
     nick = params["nick"]
-    cnt = talks[random.randint(0,len(talks)-1)][:-1].decode("utf-8")
     args = params['msg'].split()
 
     if len(args) == 3:
@@ -165,9 +163,13 @@ def cmd_fuck(myself, params):
         i = 0
         while i < num:
             i = i+1
+            random.seed(time.time())
+            cnt = talks[random.randint(0,len(talks)-1)][:-1].decode("utf-8")
             msg = u"%s: fuck %d 次! %s: \"%s\"" % (nick, i, who, cnt)
             myself.send2room(msg)
     else:
+        random.seed(time.time())
+        cnt = talks[random.randint(0,len(talks)-1)][:-1].decode("utf-8")
         msg = u"%s: fuck! %s" % (nick, cnt)
         myself.send2room(msg)
 
