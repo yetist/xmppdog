@@ -26,6 +26,7 @@ import os
 import types
 from QQWry import MQQWry
 from qiubai import QiuBai
+import random, time
 
 commands = {}
 acommands = {}
@@ -143,6 +144,16 @@ def cmd_unblockme(myself, params):
         myself.blockme.remove(params["nick"])
         msg=u"%s: 执行完毕，我将重新开始抓取你发的链接" % params["nick"]
         myself.send2room(msg)
+
+def cmd_fuck(myself, params):
+    "你敢试试吗？"
+
+    fuck = os.path.join(myself.xmppdog.base_dir, "fuck.txt")
+    fd = open(fuck)
+    talks = fd.readlines()
+    random.seed(time.time())
+    msg=u"%s: %s" % (params["nick"], talks[random.randint(0,len(talks)-1)][:-1].decode("utf-8"))
+    myself.send2room(msg)
 
 def cmd_ip(myself, params):
     "<IP>           查询ip地址"
