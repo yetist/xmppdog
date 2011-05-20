@@ -84,6 +84,7 @@ class Plugin(PluginBase):
             return
         if self.is_room_msg(stanza):
             return True
+        ########## 好友消息／命令处理 #############
         print "[chat]", body
         return True
 

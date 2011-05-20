@@ -178,7 +178,7 @@ class Plugin(PluginBase):
         except MSG_COMMAND:
             self.send_to_one(stanza, func.__doc__)
 
-#########################################################
+##################### 私聊消息／命令处理 ####################################
 
 def cmd_msg(myself, stanza, msg):
     "[room] <message> -  向聊天室发送消息"
