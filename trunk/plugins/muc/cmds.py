@@ -109,7 +109,7 @@ def cmd_fetch(myself, params):
         myself.fetchlist.append(myjid)
 
         num = len(myself.fetchlist)
-        msg = u"/me \"%s\"订阅了本聊天室的消息，目前共有 %d 个订阅者，他们是\n%s。" % (nick, num, "\n".join(myself.fetchlist))
+        msg = u"/me \"%s\"订阅了本聊天室的消息，目前共有 %d 个订阅者\n%s" % (nick, num, "\n".join(myself.fetchlist))
 
         myself.send2room(msg)
         myself.send2nick(nick, "已经订阅成功")
@@ -127,7 +127,7 @@ def cmd_unfetch(myself, params):
         if num == 0:
             msg = u"/me \"%s\"取消了订阅本聊天室的消息，目前没有订阅者。" % nick
         else:
-            msg = u"/me \"%s\"取消了订阅本聊天室的消息，目前共有 %d 个订阅者，他们是%s。" % (nick, num, " ".join(myself.fetchlist))
+            msg = u"/me \"%s\"取消了订阅本聊天室的消息，目前共有 %d 个订阅者\n%s" % (nick, num, "\n".join(myself.fetchlist))
 
         myself.send2room(msg)
         myself.send2nick(nick, "成功取消订阅")

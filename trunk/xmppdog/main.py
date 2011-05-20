@@ -38,6 +38,8 @@ from pyxmpp.interface import implements
 from pyxmpp.interfaces import *
 from pyxmpp import streamtls
 
+import dns
+
 class Application(JabberClient):
     """ Application class """
 
@@ -100,7 +102,12 @@ class Application(JabberClient):
                                    auth_methods = auth)
             self.disco_info.add_feature("jabber:iq:version")
             self.logger.debug("connecting...")
-            self.connect()
+            try:
+                self.connect()
+            except dns.exception.Timeout:
+                self.logger.info("Timeout..., Quit now")
+                self.exit()
+                return
             self.logger.debug("processing...")
             self.stream.process_stream_error = self.my_stream_error
             
@@ -113,7 +120,7 @@ class Application(JabberClient):
             self.logger.info("Quit request")
             self.exit()
         except StreamError:
-            raise
+            self.exit()
     
     def _load_plugin(self, name):
         """ 
@@ -237,9 +244,9 @@ class Application(JabberClient):
             name=item.name
         else:
             name=u""
-        print (u'%s "%s" subscription=%s groups=%s'
-                % (unicode(item.jid), name, item.subscription,
-                    u",".join(item.groups)) )
+       # print (u'%s "%s" subscription=%s groups=%s'
+       #         % (unicode(item.jid), name, item.subscription,
+       #             u",".join(item.groups)) )
 
     def roster_updated(self,item=None):
         print "call roster_updated"
