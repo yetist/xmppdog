@@ -33,6 +33,8 @@ commandchrs = "--"
 
 qb = QiuBai()
 
+##################### 群聊消息／命令处理 ####################################
+
 def cmd_blockme(myself, params):
     "停止抓取自己发送的链接标题"
 
@@ -166,7 +168,7 @@ def cmd_version(myself, params):
     msg = "\n".join(line)
     myself.send2room(msg)
 
-#########################################################
+##################### 群聊消息／命令处理 ####################################
 
 for i, func in globals().items():
     if isinstance(func, types.FunctionType):

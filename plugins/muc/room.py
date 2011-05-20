@@ -154,6 +154,8 @@ class Room(muc.MucRoomHandler):
         except MSG_COMMAND:
             self.send2room(func.__doc__)
 
+##################### 群聊锁定消息／命令处理 ####################################
+
     def msg_callme(self, fparams):
         if fparams["nick"] in self.blockme:
             return
@@ -209,6 +211,8 @@ class Room(muc.MucRoomHandler):
         else:
             msg = u"烂 %s, 居然发个假链接来耍我" % fparams["nick"]
             self.room_state.send_message(msg)
+
+##################### 群聊锁定消息／命令处理 ####################################
 
 if __name__=="__main__":
     pass
