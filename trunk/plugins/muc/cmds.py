@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 """
 
 import os
+import sys
 import types
 from QQWry import MQQWry
 from qiubai import QiuBai
@@ -186,13 +187,16 @@ def cmd_ip(myself, params):
         myself.send2room(msg)
 
 def cmd_version(myself, params):
-    "显示xmppdog版本信息"
+    "显示xmppdog的版本相关信息"
 
     line = [
             "",
-            "homepage: http://xmppdog.googlecode.com",
+            "Homepage: http://xmppdog.googlecode.com",
             "$Revision$",
             "$Date: 2011-05-12 23:01:10 +0800 (四, 2011-05-12) $",
+            "Jabber ID: %s.%s/%s" % (myself.xmppdog.cfg.get('login', 'user'), myself.xmppdog.cfg.get('login', 'host'), myself.xmppdog.cfg.get('login', 'resource')),
+            "Admin: %s" % " ".join(myself.xmppdog.admin),
+            "Python Version: %s" % sys.version,
             ]
     msg = "\n".join(line)
     myself.send2room(msg)

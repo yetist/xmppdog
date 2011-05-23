@@ -19,3 +19,4 @@ chatroom = 1
 #格式: 聊天室地址 = 昵称
 linuxcn@conference.jabber.org = xmppdog
 linuxcn@conference.jaim.at = xmppdog
+linuxcn@conference.telepathy.im= xmppdog
