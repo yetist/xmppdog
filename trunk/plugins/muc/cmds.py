@@ -46,8 +46,12 @@ def cmd_blockme(myself, params):
         myself.send2room(msg)
 
 def cmd_joke(myself, params):
-    "显示笑话"
-    myself.send2room(qb.fetch())
+    "[hot] 显示笑话(默认为最新)"
+    args = params['msg'].split()
+    if len(args) == 2:
+        myself.send2room(qb.fetch(hot=True))
+    else:
+        myself.send2room(qb.fetch())
 
 def cmd_date(myself, params):
     "显示日期"
