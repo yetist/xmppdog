@@ -194,7 +194,7 @@ def cmd_version(myself, params):
             "Homepage: http://xmppdog.googlecode.com",
             "$Revision$",
             "$Date: 2011-05-12 23:01:10 +0800 (四, 2011-05-12) $",
-            "Jabber ID: %s.%s/%s" % (myself.xmppdog.cfg.get('login', 'user'), myself.xmppdog.cfg.get('login', 'host'), myself.xmppdog.cfg.get('login', 'resource')),
+            "Jabber ID: %s@%s/%s" % (myself.xmppdog.cfg.get('login', 'user'), myself.xmppdog.cfg.get('login', 'host'), myself.xmppdog.cfg.get('login', 'resource')),
             "Admin: %s" % " ".join(myself.xmppdog.admin),
             "Python Version: %s" % sys.version,
             ]
