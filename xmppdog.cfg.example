@@ -10,6 +10,10 @@ pass =
 resource = xmppbot
 disconnect_timeout=2
 
+[talks]
+fuck = fuck.txt
+random = random.txt
+
 [plugins]
 #是否启用某些插件
 chat = 1
