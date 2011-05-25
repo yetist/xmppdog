@@ -153,30 +153,29 @@ def cmd_unblockme(myself, params):
 def cmd_fuck(myself, params):
     "你敢试试吗？"
 
-    fuck = os.path.join(myself.xmppdog.base_dir, "fuck.txt")
-    fd = open(fuck)
-    talks = fd.readlines()
-    nick = params["nick"]
-    args = params['msg'].split()
+    if myself.xmppdog.talks.has_key('fuck'):
+        talks = myself.xmppdog.talks['fuck']
+        nick = params["nick"]
+        args = params['msg'].split()
 
-    if len(args) == 3:
-        who = args[1]
-        try:
-            num = int(args[2])
-        except ValueError:
-            num = 1
-        i = 0
-        while i < num:
-            i = i+1
+        if len(args) == 3:
+            who = args[1]
+            try:
+                num = int(args[2])
+            except ValueError:
+                num = 1
+            i = 0
+            while i < num:
+                i = i+1
+                random.seed(time.time())
+                cnt = talks[random.randint(0,len(talks)-1)][:-1].decode("utf-8")
+                msg = u"%s: fuck %d 次! %s: \"%s\"" % (nick, i, who, cnt)
+                myself.send2room(msg)
+        else:
             random.seed(time.time())
             cnt = talks[random.randint(0,len(talks)-1)][:-1].decode("utf-8")
-            msg = u"%s: fuck %d 次! %s: \"%s\"" % (nick, i, who, cnt)
+            msg = u"%s: fuck! %s" % (nick, cnt)
             myself.send2room(msg)
-    else:
-        random.seed(time.time())
-        cnt = talks[random.randint(0,len(talks)-1)][:-1].decode("utf-8")
-        msg = u"%s: fuck! %s" % (nick, cnt)
-        myself.send2room(msg)
 
 def cmd_ip(myself, params):
     "<IP>           查询ip地址"

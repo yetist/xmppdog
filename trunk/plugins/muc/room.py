@@ -27,6 +27,7 @@ from pyxmpp.jabber import muc,delay
 from cmds import commands, acommands, commandchrs
 from pyxmpp.message import Message
 import pyxmpp
+import random,time
 
 class ADMIN_COMMAND(Exception):pass
 class MSG_COMMAND(Exception):pass
@@ -122,7 +123,8 @@ class Room(muc.MucRoomHandler):
         #if td.seconds > 10:
         if fparams["format"] == "muc.to_me":
             #block msg from xmppdog.
-            #user = self.room_state.get_user(fparams['nick'], True)
+            user = self.room_state.get_user(fparams['nick'], True)
+            print user.real_jid.resource
             #if user.real_jid.resource.find("bot") >= 0:
             #    return
             self.msg_callme(fparams)
@@ -159,13 +161,11 @@ class Room(muc.MucRoomHandler):
     def msg_callme(self, fparams):
         if fparams["nick"] in self.blockme:
             return
-        random = os.path.join(self.xmppdog.base_dir, "random.txt")
-        fd = open(random)
-        talks = fd.readlines()
-        import random,time
-        random.seed(time.time())
-        msg=u"%s: %s" % (fparams["nick"], talks[random.randint(0,len(talks)-1)][:-1].decode("utf-8"))
-        self.room_state.send_message(msg)
+        if self.xmppdog.talks.has_key('random'):
+            talks = self.xmppdog.talks['random']
+            random.seed(time.time())
+            msg=u"%s: %s" % (fparams["nick"], talks[random.randint(0,len(talks)-1)][:-1].decode("utf-8"))
+            self.room_state.send_message(msg)
 
     def msg_http(self, fparams):
         import urllib2,re

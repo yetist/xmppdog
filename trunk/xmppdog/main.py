@@ -55,8 +55,10 @@ class Application(JabberClient):
         self.allow_plugins = []
         self.all_plugins = []
         self.disconnect_timeout = 2
-        self.read_cfg()
         self.base_dir = base_dir
+        self.talks = {}
+
+        self.read_cfg()
         home = os.environ.get("HOME", "")
         self.home_dir = os.path.join(home, ".xmppdog")
         self.plugin_dirs = [os.path.join(base_dir, "plugins"),
@@ -80,6 +82,10 @@ class Application(JabberClient):
                       )
         self.password = unicode(self.cfg.get('login', 'pass'), 'iso-8859-2')
         self.disconnect_timeout = self.cfg.getfloat('login','disconnect_timeout')
+        if self.cfg.has_section("talks"):
+            for (n, v) in self.cfg.items("talks"):
+                self.talks[n] = open(os.path.join(self.base_dir, v)).readlines()
+
         for (n, v) in self.cfg.items("plugins"):
             if int(v):
                 self.allow_plugins.append(n)
