@@ -124,7 +124,8 @@ class Room(muc.MucRoomHandler):
         if fparams["format"] == "muc.to_me":
             #block msg from xmppdog.
             user = self.room_state.get_user(fparams['nick'], True)
-            print user.real_jid.resource
+            if user.real_jid is not None:
+                print user.real_jid.resource
             #if user.real_jid.resource.find("bot") >= 0:
             #    return
             self.msg_callme(fparams)
